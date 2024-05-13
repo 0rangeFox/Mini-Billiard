@@ -12,4 +12,5 @@ include(STB)
 
 add_subdirectory(libs/glfw)
 add_subdirectory(libs/glew)
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw libglew_static stb)
+add_subdirectory(libs/glm)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw libglew_static glm stb)
