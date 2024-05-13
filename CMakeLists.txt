@@ -1,6 +1,12 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.0)
 project(Mini_Billiard)
 
-set(CMAKE_CXX_STANDARD 17)
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS src/*.c src/*.cc src/*.cpp src/*.hpp src/*.h)
 
-add_executable(Mini_Billiard main.cpp)
+set(CMAKE_CXX_STANDARD 98)
+
+add_executable(${PROJECT_NAME} ${sources})
+
+add_subdirectory(libs/glfw)
+add_subdirectory(libs/glew)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw libglew_static)
