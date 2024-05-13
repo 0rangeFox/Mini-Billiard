@@ -2,19 +2,24 @@
 // Created by João Fernandes on 13/05/2024.
 //
 
-#include <iostream>
-#include <GLFW/glfw3.h>
-#include "../classes/ObjectRenderable.h"
-
 #ifndef MINI_BILLIARD_APPLICATION_H
 #define MINI_BILLIARD_APPLICATION_H
+
+#include <iostream>
+#include <GLFW/glfw3.h>
+#include "../classes/ObjectRenderable.hpp"
 
 class Application {
 public:
     Application(const std::string&, int, int);
     ~Application();
 
+    float getAngle() const { return this->angle; }
+    float getZoom() const { return this->zoom; }
+
     void addObject(const ObjectRenderable*);
+    float changeAngle(float);
+    float changeZoom(float);
 
     int run();
 

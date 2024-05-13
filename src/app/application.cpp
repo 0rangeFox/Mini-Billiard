@@ -3,6 +3,7 @@
 //
 
 #include "application.h"
+#include "../callbacks/ScrollCallback.hpp"
 
 Application::Application(const std::string& title, int width, int height) {
     this->width = width;
@@ -28,6 +29,18 @@ void Application::addObject(const ObjectRenderable* obj) {
     this->objects.push_back(obj);
 }
 
+float Application::changeAngle(float angle) {
+    float oldAngle = this->angle;
+    this->angle = angle;
+    return oldAngle;
+}
+
+float Application::changeZoom(float zoom) {
+    float oldZoom = this->zoom;
+    this->zoom = zoom;
+    return oldZoom;
+}
+
 void Application::updateCamera(float zoom, float angle) {
     this->zoom = zoom;
     this->angle = angle;
@@ -49,6 +62,9 @@ int Application::run() {
     glfwMakeContextCurrent(this->actualWindow);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glEnable(GL_DEPTH_TEST);
+
+    glfwSetWindowUserPointer(this->actualWindow, this);
+    glfwSetScrollCallback(this->actualWindow, ScrollCallback);
 
     while (!glfwWindowShouldClose(this->actualWindow)) {
         this->updateCamera(this->zoom, this->angle += 0.001f);

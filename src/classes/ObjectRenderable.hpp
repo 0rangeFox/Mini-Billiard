@@ -2,13 +2,13 @@
 // Created by João Fernandes on 13/05/2024.
 //
 
+#ifndef MINI_BILLIARD_OBJECTRENDERABLE_HPP
+#define MINI_BILLIARD_OBJECTRENDERABLE_HPP
+
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#ifndef MINI_BILLIARD_OBJECTRENDERABLE_H
-#define MINI_BILLIARD_OBJECTRENDERABLE_H
 
 class ObjectRenderable {
 public:
@@ -50,4 +50,4 @@ private:
     std::vector<glm::vec3> obj;
 };
 
-#endif //MINI_BILLIARD_OBJECTRENDERABLE_H
+#endif //MINI_BILLIARD_OBJECTRENDERABLE_HPP
