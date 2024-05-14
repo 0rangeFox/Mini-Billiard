@@ -5,8 +5,8 @@
 #include "application.h"
 #include "../callbacks/ErrorCallback.hpp"
 #include "../callbacks/MouseButtonCallback.hpp"
-#include "../callbacks/MouseCallback.hpp"
-#include "../callbacks/ScrollCallback.hpp"
+#include "../callbacks/MouseMoveCallback.hpp"
+#include "../callbacks/MouseScrollCallback.hpp"
 
 Application::Application(const std::string& title, int width, int height) {
     this->width = width;
@@ -61,15 +61,18 @@ float Application::updateZoom(float zoom) {
 }
 
 void Application::updateCamera() {
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(this->width / this->height), 0.1f, 100.f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(this->width) / float(this->height), 0.1f, 100.f);
 
     glm::mat4 view = glm::lookAt(
-        glm::vec3(0.0f, 0.0f, this->zoom),
-        glm::vec3(0.0f, 0.0f, -1.0f),
-        glm::vec3(0.0f, 1.0f, 0.0f)
+        glm::vec3(0.0f, 5.0f, this->zoom),
+        glm::vec3(0.0f, 0.f, -1.0f),
+        glm::vec3(0.0f, 1.f, 0.0f)
     );
 
-    glm::mat4 model = glm::rotate(glm::mat4(1.0f), this->angle, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
+    // Rotations
+    // https://www.songho.ca/opengl/files/gl_camera07.jpg
+    // https://learnopengl.com/img/getting-started/camera_pitch_yaw_roll.png
+    glm::mat4 model = glm::rotate(glm::mat4(1.0f), this->angle, glm::normalize(glm::vec3(0.f, 1.f, 0.f)));
 
     this->mvp = projection * view * model;
 }
@@ -85,8 +88,8 @@ int Application::run() {
 
     // Initialize mouse interceptors
     glfwSetMouseButtonCallback(this->actualWindow, MouseButtonCallback);
-    glfwSetCursorPosCallback(this->actualWindow, MouseCallback);
-    glfwSetScrollCallback(this->actualWindow, ScrollCallback);
+    glfwSetCursorPosCallback(this->actualWindow, MouseMoveCallback);
+    glfwSetScrollCallback(this->actualWindow, MouseScrollCallback);
 
     while (!glfwWindowShouldClose(this->actualWindow)) {
         for (const ObjectRenderable* obj : this->objects) {
