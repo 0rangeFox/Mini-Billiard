@@ -6,8 +6,12 @@
 #define MINI_BILLIARD_APPLICATION_H
 
 #include <iostream>
+#include <tuple>
 #include <GLFW/glfw3.h>
 #include "../classes/ObjectRenderable.hpp"
+
+typedef std::tuple<double, double> MouseCoord;
+typedef std::tuple<MouseCoord, MouseCoord> MouseCoords;
 
 class Application {
 public:
@@ -17,21 +21,58 @@ public:
     float getAngle() const { return this->angle; }
     float getZoom() const { return this->zoom; }
 
+    /// Update the coordinates of mouse
+    /// \param x The new position in X
+    /// \param y The new position in Y
+    /// \return Return a tuple with the two coordinates of mouse from X and Y,
+    /// the left side is coord X and right side is coord Y.
+    /// Inside of coord, the left size is last coord and right side is actual coord.
+    MouseCoords updateMouseCoords(double x, double y) {
+        get<0>(this->mouseX) = get<1>(this->mouseX);
+        get<1>(this->mouseX) = x;
+
+        get<0>(this->mouseY) = get<1>(this->mouseY);
+        get<1>(this->mouseY) = y;
+
+        return std::make_tuple(this->mouseX, this->mouseY);
+    }
+
+    bool isMouseLeftButtonDown() const { return this->mouseLeftButtonDownStatus; }
+    bool setMouseLeftButtonDown(bool status) { this->mouseLeftButtonDownStatus = status; }
+
     void addObject(const ObjectRenderable*);
-    float changeAngle(float);
-    float changeZoom(float);
+
+    /// Set a value to the angle
+    /// \return  The last angle value
+    float setAngle(float);
+
+    /// Update the angle with the value (Without replacing, it's only sum with the value)
+    /// \param angle The value to be summed into the angle
+    /// \return
+    float updateAngle(float angle);
+
+    /// Set a value to the zoom
+    /// \return The last zoom value
+    float setZoom(float);
+
+    /// Update the zoom with the value (Without replacing, it's only sum with the value)
+    /// \param zoom The value to be summed into the zoom
+    /// \return The new zoom value
+    float updateZoom(float zoom);
 
     int run();
 
 private:
     int width, height;
     float angle, zoom;
+    bool mouseLeftButtonDownStatus;
+    MouseCoord mouseX, mouseY = { 0, 0 };
     glm::mat4 mvp;
 
     GLFWwindow* actualWindow;
     std::vector<const ObjectRenderable*> objects;
 
-    void updateCamera(float, float);
+    void updateCamera();
 };
 
 #endif //MINI_BILLIARD_APPLICATION_H

@@ -4,6 +4,8 @@
 
 #include "application.h"
 #include "../callbacks/ErrorCallback.hpp"
+#include "../callbacks/MouseButtonCallback.hpp"
+#include "../callbacks/MouseCallback.hpp"
 #include "../callbacks/ScrollCallback.hpp"
 
 Application::Application(const std::string& title, int width, int height) {
@@ -32,22 +34,33 @@ void Application::addObject(const ObjectRenderable* obj) {
     this->objects.push_back(obj);
 }
 
-float Application::changeAngle(float angle) {
+float Application::setAngle(float angle) {
     float oldAngle = this->angle;
     this->angle = angle;
+    this->updateCamera();
     return oldAngle;
 }
 
-float Application::changeZoom(float zoom) {
+float Application::updateAngle(float angle) {
+    float newAngle = this->angle + angle;
+    this->setAngle(newAngle);
+    return angle;
+}
+
+float Application::setZoom(float zoom) {
     float oldZoom = this->zoom;
     this->zoom = zoom;
+    this->updateCamera();
     return oldZoom;
 }
 
-void Application::updateCamera(float zoom, float angle) {
-    this->zoom = zoom;
-    this->angle = angle;
+float Application::updateZoom(float zoom) {
+    float newZoom = this->zoom + zoom;
+    this->setZoom(newZoom);
+    return newZoom;
+}
 
+void Application::updateCamera() {
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(this->width / this->height), 0.1f, 100.f);
 
     glm::mat4 view = glm::lookAt(
@@ -62,16 +75,20 @@ void Application::updateCamera(float zoom, float angle) {
 }
 
 int Application::run() {
+    this->updateCamera();
+
     glfwMakeContextCurrent(this->actualWindow);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glEnable(GL_DEPTH_TEST);
 
     glfwSetWindowUserPointer(this->actualWindow, this);
+
+    // Initialize mouse interceptors
+    glfwSetMouseButtonCallback(this->actualWindow, MouseButtonCallback);
+    glfwSetCursorPosCallback(this->actualWindow, MouseCallback);
     glfwSetScrollCallback(this->actualWindow, ScrollCallback);
 
     while (!glfwWindowShouldClose(this->actualWindow)) {
-        this->updateCamera(this->zoom, this->angle += 0.001f);
-
         for (const ObjectRenderable* obj : this->objects) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             obj->render(this->mvp);

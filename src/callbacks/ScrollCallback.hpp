@@ -12,9 +12,9 @@ void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
     auto app = (Application*) glfwGetWindowUserPointer(window);
 
     if (yOffset == 1) // Zoom in
-        app->changeZoom(app->getZoom() + fabs(app->getZoom()) * .25f);
+        app->updateZoom(fabs(app->getZoom()) * .25f);
     else if (yOffset == -1) // Zoom out
-        app->changeZoom(app->getZoom() - fabs(app->getZoom()) * .25f);
+        app->updateZoom(-fabs(app->getZoom()) * .25f);
 }
 
 #endif //MINI_BILLIARD_SCROLLCALLBACK_HPP
