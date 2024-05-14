@@ -3,6 +3,7 @@
 //
 
 #include "application.h"
+#include "../callbacks/ErrorCallback.hpp"
 #include "../callbacks/ScrollCallback.hpp"
 
 Application::Application(const std::string& title, int width, int height) {
@@ -10,6 +11,8 @@ Application::Application(const std::string& title, int width, int height) {
     this->height = height;
     this->zoom = 10.f;
     this->angle = 0.f;
+
+    glfwSetErrorCallback(ErrorCallback);
 
     if (!glfwInit()) return;
 
