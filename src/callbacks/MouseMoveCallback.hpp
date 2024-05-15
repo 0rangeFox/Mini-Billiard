@@ -14,11 +14,11 @@ void MouseMoveCallback(GLFWwindow* window, double posX, double posY) {
     auto mouseCoords = app->updateMouseCoords(posX, posY);
 
     if (app->isMouseLeftButtonDown()) {
-        auto mouseX = get<0>(mouseCoords);
-        auto mouseY = get<1>(mouseCoords);
+        auto mouseX = std::get<0>(mouseCoords);
+        auto mouseY = std::get<1>(mouseCoords);
 
-        int dx = get<1>(mouseX) - get<0>(mouseX);
-        int dy = get<1>(mouseY) - get<0>(mouseY);
+        int dx = std::get<1>(mouseX) - std::get<0>(mouseX);
+        int dy = std::get<1>(mouseY) - std::get<0>(mouseY);
 
         if (dx < 0) // Rotating to left side
             app->updateAngle(0.01f);

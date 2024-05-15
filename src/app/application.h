@@ -6,6 +6,7 @@
 #define MINI_BILLIARD_APPLICATION_H
 
 #include <tuple>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "../classes/ObjectRenderable.hpp"
 
@@ -27,17 +28,17 @@ public:
     /// the left side is coord X and right side is coord Y.
     /// Inside of coord, the left size is last coord and right side is actual coord.
     MouseCoords updateMouseCoords(double x, double y) {
-        get<0>(this->mouseX) = get<1>(this->mouseX);
-        get<1>(this->mouseX) = x;
+        std::get<0>(this->mouseX) = std::get<1>(this->mouseX);
+        std::get<1>(this->mouseX) = x;
 
-        get<0>(this->mouseY) = get<1>(this->mouseY);
-        get<1>(this->mouseY) = y;
+        std::get<0>(this->mouseY) = std::get<1>(this->mouseY);
+        std::get<1>(this->mouseY) = y;
 
         return std::make_tuple(this->mouseX, this->mouseY);
     }
 
     bool isMouseLeftButtonDown() const { return this->mouseLeftButtonDownStatus; }
-    bool setMouseLeftButtonDown(bool status) { this->mouseLeftButtonDownStatus = status; }
+    void setMouseLeftButtonDown(bool status) { this->mouseLeftButtonDownStatus = status; }
 
     void addObject(const ObjectRenderable*);
 
