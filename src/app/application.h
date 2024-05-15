@@ -5,7 +5,6 @@
 #ifndef MINI_BILLIARD_APPLICATION_H
 #define MINI_BILLIARD_APPLICATION_H
 
-#include <iostream>
 #include <tuple>
 #include <GLFW/glfw3.h>
 #include "../classes/ObjectRenderable.hpp"

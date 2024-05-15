@@ -5,11 +5,10 @@
 #ifndef MINI_BILLIARD_OBJECTRENDERABLE_HPP
 #define MINI_BILLIARD_OBJECTRENDERABLE_HPP
 
-#include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "../utils/ObjUtil.hpp"
+#include "../utils/ObjUtil.h"
 
 class ObjectRenderable {
 public:
