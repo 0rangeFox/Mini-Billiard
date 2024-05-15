@@ -9,9 +9,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "../utils/ObjUtil.hpp"
 
 class ObjectRenderable {
 public:
+    explicit ObjectRenderable(const std::string& path) {
+        LoadOBJ(path);
+    }
+
     explicit ObjectRenderable(std::vector<glm::vec3> obj) {
         this->obj = std::move(obj);
     }

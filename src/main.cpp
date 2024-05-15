@@ -49,6 +49,7 @@ std::vector<glm::vec3> Load3DModel(void) {
 int main() {
     Application app { TITLE, WIDTH, HEIGHT };
 
+    ObjectRenderable testObj { "./objects/Ball1.obj" };
     auto test = new ObjectRenderable(Load3DModel());
     app.addObject(test);
 
