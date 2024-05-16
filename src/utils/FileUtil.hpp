@@ -9,6 +9,8 @@
 #include <fstream>
 #include <vector>
 #include <functional>
+#include <algorithm>
+#include <sstream>
 
 std::vector<std::string> ReadFile(const std::string& fileName) {
     std::vector<std::string> lines;

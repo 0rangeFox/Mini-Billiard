@@ -15,6 +15,7 @@
 #define HEADER_NORMAL "vn"
 #define HEADER_FACE 'f'
 
+
 bool LoadOBJ(const std::string&, std::string&, std::vector<glm::vec3>&, std::vector<glm::vec2>&, std::vector<glm::vec3>&);
 
 #endif //MINI_BILLIARD_OBJUTIL_H

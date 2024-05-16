@@ -10,7 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "../utils/ObjUtil.h"
-#include "../utils/MaterialUtil.hpp"
+#include "../utils/MaterialUtil.h"
 #include "../classes/ObjectType.h"
 
 class Application;

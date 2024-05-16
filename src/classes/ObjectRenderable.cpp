@@ -14,7 +14,7 @@ ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& pa
     this->isInitialized = LoadOBJ(path, _material, this->vertices, this->uvs, this->normals);
 
     if (!_material.empty())
-        this->material = LoadMaterial();
+        this->material = LoadMaterial(_material);
 }
 
 ObjectRenderable::~ObjectRenderable() {
@@ -53,7 +53,7 @@ void ObjectRenderable::render(const Application* app) const {
     glBindVertexArray(app->VAO[this->type]);
     glBindBuffer(GL_ARRAY_BUFFER, app->VBO[0]);
 
-    GLfloat base[this->getTotalVertices()];
+    GLfloat base[200000];
     this->generateVertex(base);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(base), base, GL_STATIC_DRAW);
 
