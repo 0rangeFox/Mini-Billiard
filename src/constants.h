@@ -9,7 +9,7 @@
 #define WIDTH 800
 #define HEIGHT 600
 
-#define VAOs 16
-#define VBOs 3
+#define VAOs 2
+#define VBOs 2 // Vertices & EBO
 
 #endif //MINI_BILLIARD_CONSTANTS_H

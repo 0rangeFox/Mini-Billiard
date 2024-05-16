@@ -9,13 +9,16 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "../constants.h"
-#include "../classes/ObjectRenderable.hpp"
+#include "../classes/ObjectRenderable.h"
 
 typedef std::tuple<double, double> MouseCoord;
 typedef std::tuple<MouseCoord, MouseCoord> MouseCoords;
 
 class Application {
 public:
+    GLuint VAO[VAOs]{};
+    GLuint VBO[VBOs]{};
+
     Application(const char*, int, int);
     ~Application();
 
@@ -69,9 +72,6 @@ private:
     bool mouseLeftButtonDownStatus = false;
     MouseCoord mouseX{ 0, 0 }, mouseY{ 0, 0 };
     glm::mat4 mvp{ .0f };
-
-    GLuint VAO[VAOs]{};
-    GLuint VBO[VBOs]{};
 
     GLFWwindow* actualWindow;
     std::vector<const ObjectRenderable*> objects;
