@@ -7,13 +7,15 @@
 #include <sstream>
 #include "FileUtil.hpp"
 
-bool LoadOBJ(const std::string& path, std::vector<glm::vec3>& vertices, std::vector<glm::vec2>& uvs, std::vector<glm::vec3>& normals) {
+bool LoadOBJ(const std::string& path, std::string& material, std::vector<glm::vec3>& vertices, std::vector<glm::vec2>& uvs, std::vector<glm::vec3>& normals) {
     std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
     std::vector<glm::vec3> temp_vertices, temp_normals;
     std::vector<glm::vec2> temp_uvs;
 
-    if (!ReadFile(path, [&temp_vertices, &temp_uvs, &temp_normals, &vertexIndices, &uvIndices, &normalIndices](const std::string& line) {
-        if (!line.rfind(HEADER_VERTEX)) {
+    if (!ReadFile(path, [&material, &temp_vertices, &temp_uvs, &temp_normals, &vertexIndices, &uvIndices, &normalIndices](const std::string& line) {
+        if (!line.rfind(HEADER_MATERIAL)) {
+            std::istringstream(line.substr(6)) >> material;
+        } else if (!line.rfind(HEADER_VERTEX)) {
             glm::vec3 vertex;
             std::istringstream(line.substr(1)) >> vertex.x >> vertex.y >> vertex.z;
             temp_vertices.push_back(vertex);

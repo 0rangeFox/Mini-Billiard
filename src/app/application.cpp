@@ -19,6 +19,16 @@ Application::Application(const char* title, int width, int height) {
 
     if (!glfwInit()) return;
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+
+#if _WIN32 || _WIN64
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+#elif __APPLE__
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+#endif
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     this->actualWindow = glfwCreateWindow(this->width, this->height, title, nullptr, nullptr);
     glfwMakeContextCurrent(this->actualWindow);
 
