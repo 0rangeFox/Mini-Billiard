@@ -12,7 +12,7 @@
 #define HEADER_VERTEX "v "
 #define HEADER_TEXTURE "vt"
 #define HEADER_NORMAL "vn"
-#define HEADER_FACE "f"
+#define HEADER_FACE 'f'
 
 bool LoadOBJ(const std::string&, std::vector<glm::vec3>&, std::vector<glm::vec2>&, std::vector<glm::vec3>&);
 

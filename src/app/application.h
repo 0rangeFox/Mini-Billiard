@@ -8,6 +8,7 @@
 #include <tuple>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "../constants.h"
 #include "../classes/ObjectRenderable.hpp"
 
 typedef std::tuple<double, double> MouseCoord;
@@ -15,7 +16,7 @@ typedef std::tuple<MouseCoord, MouseCoord> MouseCoords;
 
 class Application {
 public:
-    Application(const std::string&, int, int);
+    Application(const char*, int, int);
     ~Application();
 
     float getAngle() const { return this->angle; }
@@ -65,9 +66,12 @@ public:
 private:
     int width, height;
     float angle, zoom;
-    bool mouseLeftButtonDownStatus;
-    MouseCoord mouseX, mouseY = { 0, 0 };
-    glm::mat4 mvp;
+    bool mouseLeftButtonDownStatus = false;
+    MouseCoord mouseX{ 0, 0 }, mouseY{ 0, 0 };
+    glm::mat4 mvp{ .0f };
+
+    GLuint VAO[VAOs]{};
+    GLuint VBO[VBOs]{};
 
     GLFWwindow* actualWindow;
     std::vector<const ObjectRenderable*> objects;

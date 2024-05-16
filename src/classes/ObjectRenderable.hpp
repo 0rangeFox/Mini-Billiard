@@ -18,7 +18,7 @@ public:
     }
 
     void render(const glm::mat4& mvp) const {
-       glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+       glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * this->vertices.size(), &this->vertices[0], GL_STATIC_DRAW);
     }
 
 private:

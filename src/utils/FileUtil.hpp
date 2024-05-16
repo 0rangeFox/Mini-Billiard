@@ -21,16 +21,21 @@ std::vector<std::string> ReadFile(const std::string& fileName) {
             lines.push_back(line);
 
         file.close();
-    } else {
+    } else
         std::cerr << "Error: Unable to open file " << fileName << std::endl;
-    }
 
     return lines;
 }
 
-void ReadFile(const std::string& fileName, const std::function<void(const std::string&)>& lineCallback) {
-    for (const std::string& line : ReadFile(fileName))
-        lineCallback(line);
+bool ReadFile(const std::string& fileName, const std::function<bool(const std::string&)>& lineCallback) {
+//    for (const std::string& line : ReadFile(fileName))
+//        if (!lineCallback(line))
+//            return false;
+//    return true;
+
+    // The above code is same as this
+    auto lines = ReadFile(fileName);
+    return std::all_of(lines.begin(), lines.end(), lineCallback);
 }
 
 #endif //MINI_BILLIARD_FILEUTIL_HPP

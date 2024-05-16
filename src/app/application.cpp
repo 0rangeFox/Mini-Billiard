@@ -8,17 +8,18 @@
 #include "../callbacks/MouseMoveCallback.hpp"
 #include "../callbacks/MouseScrollCallback.hpp"
 
-Application::Application(const std::string& title, int width, int height) {
+Application::Application(const char* title, int width, int height) {
     this->width = width;
     this->height = height;
     this->zoom = 10.f;
     this->angle = 0.f;
+    glewExperimental = true;
 
     glfwSetErrorCallback(ErrorCallback);
 
     if (!glfwInit()) return;
 
-    this->actualWindow = glfwCreateWindow(this->width, this->height, title.c_str(), nullptr, nullptr);
+    this->actualWindow = glfwCreateWindow(this->width, this->height, title, nullptr, nullptr);
     if (!this->actualWindow)
         return;
 }
@@ -81,6 +82,13 @@ int Application::run() {
     this->updateCamera();
 
     glfwMakeContextCurrent(this->actualWindow);
+
+    if (glewInit() != GLEW_OK)
+        return -1;
+
+    glGenVertexArrays(VAOs, this->VAO);
+    glGenBuffers(VBOs, this->VBO);
+
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glEnable(GL_DEPTH_TEST);
 
