@@ -8,7 +8,7 @@
 #include <GLFW/glfw3.h>
 #include "../app/application.h"
 
-void MouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
+static void MouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
     auto app = (Application*) glfwGetWindowUserPointer(window);
 
     if (yOffset == 1) // Zoom in

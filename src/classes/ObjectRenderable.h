@@ -9,8 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "../utils/ObjUtil.h"
-#include "../utils/MaterialUtil.h"
+#include "../classes/Material.h"
 #include "../classes/ObjectType.h"
 
 class Application;
@@ -20,9 +19,7 @@ public:
     explicit ObjectRenderable(const ObjectType&, const std::string&);
     ~ObjectRenderable();
 
-    GLuint getTotalVertices() const {
-        return this->vertices.size() * 3 + this->normals.size() * 3 + this->uvs.size() * 2;
-    }
+    GLuint getTotalElements() const { return this->vertices.size() * 3 + this->normals.size() * 3 + this->uvs.size() * 2; }
     void render(const Application*) const;
 
 private:
@@ -32,7 +29,7 @@ private:
     std::vector<glm::vec3> vertices{}, normals{};
     std::vector<glm::vec2> uvs{};
 
-    GLuint generateVertex(GLfloat*) const;
+    GLfloat* generateElements() const;
 };
 
 #endif //MINI_BILLIARD_OBJECTRENDERABLE_H

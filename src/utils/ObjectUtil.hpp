@@ -1,13 +1,22 @@
 //
-// Created by João Fernandes on 15/05/2024.
+// Created by João Fernandes on 17/05/2024.
 //
 
-#include "ObjUtil.h"
+#ifndef MINI_BILLIARD_OBJECTUTIL_HPP
+#define MINI_BILLIARD_OBJECTUTIL_HPP
 
-#include <sstream>
+#include <glm/glm.hpp>
+#include <iostream>
+#include <vector>
 #include "FileUtil.hpp"
 
-bool LoadOBJ(const std::string& path, std::string& material, std::vector<glm::vec3>& vertices, std::vector<glm::vec2>& uvs, std::vector<glm::vec3>& normals) {
+#define HEADER_MATERIAL "mtllib"
+#define HEADER_VERTEX "v "
+#define HEADER_TEXTURE "vt"
+#define HEADER_NORMAL "vn"
+#define HEADER_FACE 'f'
+
+static bool LoadOBJ(const std::string& path, std::string& material, std::vector<glm::vec3>& vertices, std::vector<glm::vec2>& uvs, std::vector<glm::vec3>& normals) {
     std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
     std::vector<glm::vec3> temp_vertices, temp_normals;
     std::vector<glm::vec2> temp_uvs;
@@ -28,7 +37,7 @@ bool LoadOBJ(const std::string& path, std::string& material, std::vector<glm::ve
             std::istringstream(line.substr(2)) >> normal.x >> normal.y >> normal.z;
             temp_normals.push_back(normal);
         } else if (!line.rfind(HEADER_FACE)) {
-            #define VERTICES 3
+#define VERTICES 3
             unsigned int vertexIndex[VERTICES], uvIndex[VERTICES], normalIndex[VERTICES];
 
             int matches = sscanf(line.substr(1).c_str(), "%d/%d/%d %d/%d/%d %d/%d/%d", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
@@ -59,3 +68,5 @@ bool LoadOBJ(const std::string& path, std::string& material, std::vector<glm::ve
 
     return true;
 }
+
+#endif //MINI_BILLIARD_OBJECTUTIL_HPP

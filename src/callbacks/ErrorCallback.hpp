@@ -8,7 +8,7 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 
-void ErrorCallback(int error, const char *description) {
+static void ErrorCallback(int error, const char *description) {
     std::cout << "GLFW got an error: " << description << " (Code: " << error << ")" << std::endl;
 }
 

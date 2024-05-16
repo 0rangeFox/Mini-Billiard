@@ -9,7 +9,7 @@
 #include <GLFW/glfw3.h>
 #include "../app/application.h"
 
-void MouseMoveCallback(GLFWwindow* window, double posX, double posY) {
+static void MouseMoveCallback(GLFWwindow* window, double posX, double posY) {
     auto app = (Application*) glfwGetWindowUserPointer(window);
     auto mouseCoords = app->updateMouseCoords(posX, posY);
 

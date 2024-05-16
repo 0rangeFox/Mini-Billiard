@@ -8,7 +8,7 @@
 #include <GLFW/glfw3.h>
 #include "../app/application.h"
 
-void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     auto app = (Application*) glfwGetWindowUserPointer(window);
 
     if (button == GLFW_MOUSE_BUTTON_LEFT) {

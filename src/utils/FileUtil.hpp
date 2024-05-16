@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <sstream>
 
-std::vector<std::string> ReadFile(const std::string& fileName) {
+static std::vector<std::string> ReadFile(const std::string& fileName) {
     std::vector<std::string> lines;
     std::ifstream file(fileName);
 
@@ -29,7 +29,7 @@ std::vector<std::string> ReadFile(const std::string& fileName) {
     return lines;
 }
 
-bool ReadFile(const std::string& fileName, const std::function<bool(const std::string&)>& lineCallback) {
+static bool ReadFile(const std::string& fileName, const std::function<bool(const std::string&)>& lineCallback) {
 //    for (const std::string& line : ReadFile(fileName))
 //        if (!lineCallback(line))
 //            return false;
