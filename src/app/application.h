@@ -76,6 +76,7 @@ private:
     GLFWwindow* actualWindow;
     std::vector<const ObjectRenderable*> objects;
 
+    bool setupVAOsAndVBOs();
     void updateCamera();
 };
 

@@ -16,5 +16,4 @@
 
 bool LoadOBJ(const std::string&, std::vector<glm::vec3>&, std::vector<glm::vec2>&, std::vector<glm::vec3>&);
 
-
 #endif //MINI_BILLIARD_OBJUTIL_H

@@ -13,14 +13,16 @@ Application::Application(const char* title, int width, int height) {
     this->height = height;
     this->zoom = 10.f;
     this->angle = 0.f;
-    glewExperimental = true;
+    glewExperimental = GL_TRUE;
 
     glfwSetErrorCallback(ErrorCallback);
 
     if (!glfwInit()) return;
 
     this->actualWindow = glfwCreateWindow(this->width, this->height, title, nullptr, nullptr);
-    if (!this->actualWindow)
+    glfwMakeContextCurrent(this->actualWindow);
+
+    if (!this->actualWindow || glewInit() != GLEW_OK || !this->setupVAOsAndVBOs())
         return;
 }
 
@@ -78,19 +80,22 @@ void Application::updateCamera() {
     this->mvp = projection * view * model;
 }
 
-int Application::run() {
-    this->updateCamera();
+bool Application::setupVAOsAndVBOs() {
+    GLint maxVAOs, maxVBOs;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVAOs);
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIB_BINDINGS, &maxVBOs);
 
-    glfwMakeContextCurrent(this->actualWindow);
-
-    if (glewInit() != GLEW_OK)
-        return -1;
+    if (VAOs > maxVAOs || VBOs > maxVBOs)
+        return false;
 
     glGenVertexArrays(VAOs, this->VAO);
     glGenBuffers(VBOs, this->VBO);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glEnable(GL_DEPTH_TEST);
+    return true;
+}
+
+int Application::run() {
+    this->updateCamera();
 
     glfwSetWindowUserPointer(this->actualWindow, this);
 
@@ -99,11 +104,14 @@ int Application::run() {
     glfwSetCursorPosCallback(this->actualWindow, MouseMoveCallback);
     glfwSetScrollCallback(this->actualWindow, MouseScrollCallback);
 
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glEnable(GL_DEPTH_TEST);
+
     while (!glfwWindowShouldClose(this->actualWindow)) {
-        for (const ObjectRenderable* obj : this->objects) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        for (const ObjectRenderable* obj : this->objects)
             obj->render(this->mvp);
-        }
 
         glfwSwapBuffers(this->actualWindow);
         glfwPollEvents();

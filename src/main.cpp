@@ -3,8 +3,7 @@
 int main() {
     Application app { TITLE, WIDTH, HEIGHT };
 
-    auto test = new ObjectRenderable("./objects/Ball1.obj");
-    app.addObject(test);
+    app.addObject(new ObjectRenderable("./objects/Ball1.obj"));
 
     return app.run();
 }
