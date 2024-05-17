@@ -8,13 +8,13 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-struct Material {
+typedef struct {
     std::string name; // (newmtl)
     GLfloat specular_exponent; // (Ns)
     glm::vec3 ambient_color; // Coeficiente de reflexão da luz ambiente (Ka)
     glm::vec3 diffuse_color; // (Kd)
     glm::vec3 specular_color; // (Ks)
     std::string image; // (map_Kd)
-};
+} Material;
 
 #endif //MINI_BILLIARD_MATERIAL_H

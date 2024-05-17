@@ -4,7 +4,6 @@
 
 #include "ObjectRenderable.h"
 
-#include <GL/glew.h>
 #include "../app/application.h"
 #include "../utils/ObjectUtil.hpp"
 #include "../utils/MaterialUtil.hpp"
