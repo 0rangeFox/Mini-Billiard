@@ -5,7 +5,7 @@
 #ifndef MINI_BILLIARD_SHADERUTIL_HPP
 #define MINI_BILLIARD_SHADERUTIL_HPP
 
-#include <GLFW/glfw3.h>
+#include <GL/glew.h>
 #include "FileUtil.hpp"
 #include "StringUtil.hpp"
 #include "../classes/Shader.h"

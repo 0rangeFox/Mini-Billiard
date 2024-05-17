@@ -12,7 +12,7 @@ static std::string GetStringFromVector(const std::vector<std::string>& vString) 
     std::string newString;
 
     for (const auto& string : vString)
-        newString += string;
+        newString += string + '\n';
 
     return newString;
 }
