@@ -4,6 +4,7 @@
 
 #include "ObjectRenderable.h"
 
+#include "../macros/GLMacro.hpp"
 #include "../app/application.h"
 #include "../utils/ObjectUtil.hpp"
 #include "../utils/MaterialUtil.hpp"
@@ -56,7 +57,7 @@ void ObjectRenderable::render(const Application* app) const {
     glBindBuffer(GL_ARRAY_BUFFER, app->VBO[0]);
 
     GLfloat* elements = this->generateElements();
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+    glBufferStore(elements, sizeof(elements));
 
     auto coordsId = 0;
     GLsizei stride = sizeof(float) * (3 + 3 + 2);
