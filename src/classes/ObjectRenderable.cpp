@@ -21,6 +21,8 @@ ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& pa
 }
 
 ObjectRenderable::~ObjectRenderable() {
+    glDeleteProgram(this->shader);
+
     delete this->material;
     delete[] this->elements;
     delete[] this->indices;
@@ -59,12 +61,7 @@ void ObjectRenderable::generateElements() {
     this->elements = elements;
 }
 
-static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp) {
-    GLint mvpId = glGetUniformLocation(shader, "MVP");
-    glProgramUniformMatrix4fv(shader, mvpId, 1, GL_FALSE, glm::value_ptr(mvp));
-}
-
-void ObjectRenderable::generateShaders(ApplicationPtr app) {
+void ObjectRenderable::generateShaders() {
     Shader shaders[] = {
         { GL_VERTEX_SHADER, "shaders/ball.vert" },
         { GL_FRAGMENT_SHADER, "shaders/ball.frag" },
@@ -72,13 +69,12 @@ void ObjectRenderable::generateShaders(ApplicationPtr app) {
     };
 
     this->shader = LoadShader(shaders);
-    updateShaderUniformVariableMVP(this->shader, app->getMVP());
 }
 
 void ObjectRenderable::assemble(AppPtr app) {
     this->generateElements();
     this->generateIndices();
-    this->generateShaders(app);
+    this->generateShaders();
 
     glBindVertexArray(app->VAO[this->type]);
 
@@ -87,7 +83,7 @@ void ObjectRenderable::assemble(AppPtr app) {
 
     if (this->indices) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, app->VBO[VBO_EBO]);
-        glBufferStore(this->indices, this->vertices.size() * sizeof(GLuint))
+        glElementBufferStore(this->indices, this->vertices.size() * sizeof(GLuint))
     }
 
     glUseProgram(this->shader);
@@ -106,10 +102,16 @@ void ObjectRenderable::assemble(AppPtr app) {
     glEnableVertexAttribArray(uvsId);
 }
 
+static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp) {
+    GLint mvpId = glGetUniformLocation(shader, "MVP");
+    glProgramUniformMatrix4fv(shader, mvpId, 1, GL_FALSE, glm::value_ptr(mvp));
+}
+
 void ObjectRenderable::render(ApplicationPtr app) const {
     if (!this->isInitialized || !this->shader) return;
 
     glBindVertexArray(app->VAO[this->type]);
     updateShaderUniformVariableMVP(this->shader, app->getMVP());
+
     glDrawArrays(GL_TRIANGLES, 0, this->vertices.size());
 }

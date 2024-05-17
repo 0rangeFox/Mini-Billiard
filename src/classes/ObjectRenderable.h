@@ -38,7 +38,7 @@ private:
 
     void generateIndices();
     void generateElements();
-    void generateShaders(AppPtr);
+    void generateShaders();
 };
 
 #endif //MINI_BILLIARD_OBJECTRENDERABLE_H

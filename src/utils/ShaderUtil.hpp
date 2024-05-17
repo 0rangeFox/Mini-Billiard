@@ -28,13 +28,12 @@ static GLuint LoadShader(Shader* shader) {
     for (GLint i = 0; shader[i].type != GL_NONE; i++) {
         shader[i].component = glCreateShader(shader[i].type);
 
-        const std::string& contents = GetStringFromVector(ReadFile(shader[i].filename));
-
-        if (contents.empty())
+        const std::string& fileContents = GetStringFromVector(ReadFile(shader[i].filename));
+        if (fileContents.empty())
             return UnloadShader(shader);
 
-        const char* src = contents.c_str();
-        glShaderSource(shader[i].component, 1, &src, nullptr);
+        const char* contents = fileContents.c_str();
+        glShaderSource(shader[i].component, 1, &contents, nullptr);
         glCompileShader(shader[i].component);
 
         GLint compiled;
@@ -44,12 +43,11 @@ static GLuint LoadShader(Shader* shader) {
             int length;
             glGetShaderiv(shader[i].component, GL_INFO_LOG_LENGTH, &length);
 
-            char* message = new char[length];
+            char message[length];
             glGetShaderInfoLog(shader[i].component, length, &length, message);
 
-            std::cout<<"Error: failed to compile " << (shader[i].type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader." << std::endl << message << std::endl;
+            std::cout << "Error: failed to compile " << (shader[i].type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader." << std::endl << message << std::endl;
 
-            delete[] message;
             return UnloadShader(shader);
         }
 
