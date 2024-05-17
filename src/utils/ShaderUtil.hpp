@@ -43,7 +43,7 @@ static GLuint LoadShader(Shader* shader) {
             int length;
             glGetShaderiv(shader[i].component, GL_INFO_LOG_LENGTH, &length);
 
-            char message[length];
+            char message[50000];
             glGetShaderInfoLog(shader[i].component, length, &length, message);
 
             std::cout << "Error: failed to compile " << (shader[i].type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader." << std::endl << message << std::endl;
