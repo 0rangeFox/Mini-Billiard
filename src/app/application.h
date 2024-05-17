@@ -42,7 +42,9 @@ public:
     bool isMouseLeftButtonDown() const { return this->mouseLeftButtonDownStatus; }
     void setMouseLeftButtonDown(bool status) { this->mouseLeftButtonDownStatus = status; }
 
-    void addObject(const ObjectRenderable*);
+    void addObject(ObjectRenderable*);
+
+    const glm::mat4& getMVP() const { return this->mvp; }
 
     /// Set a value to the angle
     /// \return  The last angle value
@@ -77,5 +79,7 @@ private:
     bool setupVAOsAndVBOs();
     void updateCamera();
 };
+
+typedef const Application* ApplicationPtr;
 
 #endif //MINI_BILLIARD_APPLICATION_H

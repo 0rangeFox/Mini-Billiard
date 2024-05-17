@@ -8,6 +8,7 @@
 #include "../app/application.h"
 #include "../utils/ObjectUtil.hpp"
 #include "../utils/MaterialUtil.hpp"
+#include "../utils/ShaderUtil.hpp"
 
 ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) {
     std::string _material{};
@@ -21,9 +22,17 @@ ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& pa
 
 ObjectRenderable::~ObjectRenderable() {
     delete this->material;
+    delete[] this->elements;
+    delete[] this->indices;
 }
 
-GLfloat* ObjectRenderable::generateElements() const {
+void ObjectRenderable::generateIndices() {
+    this->indices = new GLuint[this->vertices.size()];
+    for (int i = 0; i < this->vertices.size(); ++i)
+        this->indices[i] = i;
+}
+
+void ObjectRenderable::generateElements() {
     GLfloat* elements = new GLfloat[this->getTotalElements()];
     GLuint counter = 0;
 
@@ -47,23 +56,60 @@ GLfloat* ObjectRenderable::generateElements() const {
         elements[counter++] = vUVs.y;
     }
 
-    return elements;
+    this->elements = elements;
 }
 
-void ObjectRenderable::render(const Application* app) const {
-    if (!this->isInitialized) return;
+static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp) {
+    GLint mvpId = glGetUniformLocation(shader, "MVP");
+    glProgramUniformMatrix4fv(shader, mvpId, 1, GL_FALSE, glm::value_ptr(mvp));
+}
+
+void ObjectRenderable::generateShaders(ApplicationPtr app) {
+    Shader shaders[] = {
+        { GL_VERTEX_SHADER, "shaders/ball.vert" },
+        { GL_FRAGMENT_SHADER, "shaders/ball.frag" },
+        { GL_NONE, nullptr }
+    };
+
+    this->shader = LoadShader(shaders);
+    updateShaderUniformVariableMVP(this->shader, app->getMVP());
+}
+
+void ObjectRenderable::assemble(AppPtr app) {
+    this->generateElements();
+    this->generateIndices();
+    this->generateShaders(app);
 
     glBindVertexArray(app->VAO[this->type]);
-    glBindBuffer(GL_ARRAY_BUFFER, app->VBO[0]);
 
-    GLfloat* elements = this->generateElements();
-    glBufferStore(elements, sizeof(elements));
+    glBindBuffer(GL_ARRAY_BUFFER, app->VBO[VBO_DATA]);
+    glBufferStore(this->elements, this->getTotalElements() * sizeof(GLfloat));
 
-    auto coordsId = 0;
-    GLsizei stride = sizeof(float) * (3 + 3 + 2);
-    glVertexAttribPointer(coordsId, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid *) 0);
-    glVertexAttribPointer(coordsId, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid *) 3);
-    glVertexAttribPointer(coordsId, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid *) 6);
+    if (this->indices) {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, app->VBO[VBO_EBO]);
+        glBufferStore(this->indices, this->vertices.size() * sizeof(GLuint))
+    }
 
-    delete[] elements;
+    glUseProgram(this->shader);
+
+    GLint verticesId = glGetProgramResLoc(this->shader, "vVertices")
+    GLint normalsId = glGetProgramResLoc(this->shader, "vNormals")
+    GLint uvsId = glGetProgramResLoc(this->shader, "vUVs")
+
+    GLsizei stride = sizeof(GLfloat) * (3 + 3 + 2);
+    glVertexAttribPointer(verticesId, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*) 0);
+    glVertexAttribPointer(normalsId, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*) 3);
+    glVertexAttribPointer(uvsId, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*) 6);
+
+    glEnableVertexAttribArray(verticesId);
+    glEnableVertexAttribArray(normalsId);
+    glEnableVertexAttribArray(uvsId);
+}
+
+void ObjectRenderable::render(ApplicationPtr app) const {
+    if (!this->isInitialized || !this->shader) return;
+
+    glBindVertexArray(app->VAO[this->type]);
+    updateShaderUniformVariableMVP(this->shader, app->getMVP());
+    glDrawArrays(GL_TRIANGLES, 0, this->vertices.size());
 }

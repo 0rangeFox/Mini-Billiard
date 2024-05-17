@@ -33,14 +33,25 @@ static GLuint LoadShader(Shader* shader) {
         if (contents.empty())
             return UnloadShader(shader);
 
-        glShaderSource(shader[i].component, 1, (const char* const *) contents.c_str(), nullptr);
+        const char* src = contents.c_str();
+        glShaderSource(shader[i].component, 1, &src, nullptr);
         glCompileShader(shader[i].component);
 
         GLint compiled;
         glGetShaderiv(shader[i].component, GL_COMPILE_STATUS, &compiled);
 
-        if (!compiled)
+        if (!compiled) {
+            int length;
+            glGetShaderiv(shader[i].component, GL_INFO_LOG_LENGTH, &length);
+
+            char* message = new char[length];
+            glGetShaderInfoLog(shader[i].component, length, &length, message);
+
+            std::cout<<"Error: failed to compile " << (shader[i].type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader." << std::endl << message << std::endl;
+
+            delete[] message;
             return UnloadShader(shader);
+        }
 
         glAttachShader(program, shader[i].component);
     }

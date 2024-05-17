@@ -44,7 +44,8 @@ Application::~Application() {
         delete obj;
 }
 
-void Application::addObject(const ObjectRenderable* obj) {
+void Application::addObject(ObjectRenderable* obj) {
+    obj->assemble(this);
     this->objects.push_back(obj);
 }
 

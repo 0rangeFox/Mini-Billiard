@@ -10,6 +10,9 @@
 #define HEIGHT 600
 
 #define VAOs 2
-#define VBOs 1 // EBO
+#define VBOs 2 // Data & EBO
+
+#define VBO_DATA 0
+#define VBO_EBO 1
 
 #endif //MINI_BILLIARD_CONSTANTS_H

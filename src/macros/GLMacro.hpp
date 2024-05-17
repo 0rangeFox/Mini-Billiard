@@ -8,9 +8,15 @@
 #if _WIN32 || _WIN64
     #define glBufferStore(data, size) \
         glBufferStorage(GL_ARRAY_BUFFER, size, data, 0);
+
+    #define glGetProgramResLoc(program, name) \
+        glGetProgramResourceLocation(program, GL_PROGRAM_INPUT, name);
 #elif __APPLE__
     #define glBufferStore(data, size) \
         glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+
+    #define glGetProgramResLoc(program, name) \
+        glGetAttribLocation(program, name);
 #endif
 
 #endif //MINI_BILLIARD_GLMACRO_HPP
