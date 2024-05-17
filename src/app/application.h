@@ -6,8 +6,6 @@
 #define MINI_BILLIARD_APPLICATION_H
 
 #include <tuple>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include "../constants.h"
 #include "../classes/ObjectRenderable.h"
 

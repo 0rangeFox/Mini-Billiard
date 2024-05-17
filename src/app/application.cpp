@@ -3,6 +3,7 @@
 //
 
 #include "application.h"
+
 #include "../callbacks/ErrorCallback.hpp"
 #include "../callbacks/MouseButtonCallback.hpp"
 #include "../callbacks/MouseMoveCallback.hpp"
