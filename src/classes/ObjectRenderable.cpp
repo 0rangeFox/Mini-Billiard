@@ -74,7 +74,7 @@ void ObjectRenderable::generateShaders() {
 }
 
 void ObjectRenderable::generateTextures() {
-    this->texture = LoadTexture(this->material->name, "objects/" + this->material->image);
+    this->texture = LoadTexture(this->material->name, "objects/" + this->material->image, true);
 }
 
 void ObjectRenderable::assemble(AppPtr app) {
@@ -100,9 +100,9 @@ void ObjectRenderable::assemble(AppPtr app) {
     GLint uvsId = glGetProgramResLoc(this->shader, "vUVs")
 
     GLsizei stride = sizeof(GLfloat) * (3 + 3 + 2);
-    glVertexAttribPointer(verticesId, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*) 0);
-    glVertexAttribPointer(normalsId, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*) 3);
-    glVertexAttribPointer(uvsId, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*) 6);
+    glVertexAttribPointer(verticesId, 3, GL_FLOAT, GL_FALSE, stride, nullptr);
+    glVertexAttribPointer(normalsId, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (3 * sizeof(GLfloat)));
+    glVertexAttribPointer(uvsId, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (6 * sizeof(GLfloat)));
 
     glEnableVertexAttribArray(verticesId);
     glEnableVertexAttribArray(normalsId);
