@@ -7,7 +7,7 @@
 
 #include <tuple>
 #include <GLFW/glfw3.h>
-#include "../app/application.h"
+#include "../app/Application.h"
 
 static void MouseMoveCallback(GLFWwindow* window, double posX, double posY) {
     auto app = (Application*) glfwGetWindowUserPointer(window);

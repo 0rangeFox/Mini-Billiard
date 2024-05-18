@@ -6,7 +6,7 @@
 #define MINI_BILLIARD_MOUSEBUTTONCALLBACK_HPP
 
 #include <GLFW/glfw3.h>
-#include "../app/application.h"
+#include "../app/Application.h"
 
 static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     auto app = (Application*) glfwGetWindowUserPointer(window);

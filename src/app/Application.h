@@ -6,7 +6,7 @@
 #define MINI_BILLIARD_APPLICATION_H
 
 #include <tuple>
-#include "../constants.h"
+#include "../Constants.h"
 #include "../classes/ObjectRenderable.h"
 
 typedef std::tuple<double, double> MouseCoord;

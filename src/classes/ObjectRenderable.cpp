@@ -5,7 +5,7 @@
 #include "ObjectRenderable.h"
 
 #include "../macros/GLMacro.hpp"
-#include "../app/application.h"
+#include "../app/Application.h"
 #include "../utils/ObjectUtil.hpp"
 #include "../utils/MaterialUtil.hpp"
 #include "../utils/ShaderUtil.hpp"

@@ -2,7 +2,7 @@
 // Created by João Fernandes on 13/05/2024.
 //
 
-#include "application.h"
+#include "Application.h"
 
 #include "../callbacks/ErrorCallback.hpp"
 #include "../callbacks/MouseButtonCallback.hpp"
