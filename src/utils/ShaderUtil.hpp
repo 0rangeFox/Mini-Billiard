@@ -20,6 +20,18 @@ static GLuint UnloadShader(Shader* shader) {
     return 0;
 }
 
+static GLuint UnloadShaderAndLogError(const GLuint& program, Shader* shader, const std::string& message) {
+    GLint infoLogLength = 0;
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
+
+    std::vector<GLchar> infoLog(infoLogLength);
+    glGetProgramInfoLog(program, infoLogLength, &infoLogLength, &infoLog[0]);
+
+    std::cout << message << std::endl << infoLog.data() << std::endl;
+
+    return UnloadShader(shader);
+}
+
 static GLuint LoadShader(Shader* shader) {
     if (!shader) return 0;
 
@@ -36,29 +48,20 @@ static GLuint LoadShader(Shader* shader) {
         glShaderSource(shader[i].component, 1, &contents, nullptr);
         glCompileShader(shader[i].component);
 
-        GLint compiled;
-        glGetShaderiv(shader[i].component, GL_COMPILE_STATUS, &compiled);
+        GLint isCompiled;
+        glGetShaderiv(shader[i].component, GL_COMPILE_STATUS, &isCompiled);
 
-        if (!compiled) {
-            int length;
-            glGetShaderiv(shader[i].component, GL_INFO_LOG_LENGTH, &length);
-
-            char message[50000];
-            glGetShaderInfoLog(shader[i].component, length, &length, message);
-
-            std::cout << "Error: failed to compile " << (shader[i].type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader." << std::endl << message << std::endl;
-
-            return UnloadShader(shader);
-        }
+        if (!isCompiled)
+            return UnloadShaderAndLogError(program, shader, "Error: failed to compile " + std::string(shader[i].type == GL_VERTEX_SHADER ? "vertex" : "fragment") + " shader.");
 
         glAttachShader(program, shader[i].component);
     }
 
     glLinkProgram(program);
 
-    GLint linked;
-    glGetProgramiv(program, GL_LINK_STATUS, &linked);
-    return linked ? program : UnloadShader(shader);
+    GLint isLinked;
+    glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
+    return isLinked ? program : UnloadShaderAndLogError(program, shader, "Error: failed to link the shader.");
 }
 
 #endif //MINI_BILLIARD_SHADERUTIL_HPP

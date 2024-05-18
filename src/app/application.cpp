@@ -35,6 +35,8 @@ Application::Application(const char* title, int width, int height) {
 
     if (!this->actualWindow || glewInit() != GLEW_OK || !this->setupVAOsAndVBOs())
         return;
+
+    glViewport(0, 0, this->width, this->height);
 }
 
 Application::~Application() {

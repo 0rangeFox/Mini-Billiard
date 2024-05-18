@@ -4,14 +4,12 @@
 
 #include "ObjectRenderable.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 #include "../macros/GLMacro.hpp"
 #include "../app/application.h"
 #include "../utils/ObjectUtil.hpp"
 #include "../utils/MaterialUtil.hpp"
 #include "../utils/ShaderUtil.hpp"
+#include "../utils/TextureUtil.hpp"
 
 ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) {
     std::string _material{};
@@ -20,11 +18,12 @@ ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& pa
     this->isInitialized = LoadOBJ(path, _material, this->vertices, this->uvs, this->normals);
 
     if (!_material.empty())
-        this->material = LoadMaterial(path.substr(0, path.find_last_of('/')) + "/" + _material);
+        this->material = LoadMaterial(path.substr(0, path.find_last_of('/')) + '/' + _material);
 }
 
 ObjectRenderable::~ObjectRenderable() {
     glDeleteProgram(this->shader);
+    glDeleteTextures(1, &this->texture);
 
     delete this->material;
     delete[] this->elements;
@@ -74,6 +73,10 @@ void ObjectRenderable::generateShaders() {
     this->shader = LoadShader(shaders);
 }
 
+void ObjectRenderable::generateTextures() {
+    this->texture = LoadTexture(this->material->name, "objects/" + this->material->image);
+}
+
 void ObjectRenderable::assemble(AppPtr app) {
     this->generateElements();
     this->generateIndices();
@@ -104,6 +107,9 @@ void ObjectRenderable::assemble(AppPtr app) {
     glEnableVertexAttribArray(verticesId);
     glEnableVertexAttribArray(normalsId);
     glEnableVertexAttribArray(uvsId);
+
+    GLint locationTexSampler = glGetUniformLocation(this->shader, "textureMapping");
+    glProgramUniform1i(this->shader, locationTexSampler, this->texture);
 }
 
 static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp) {
@@ -115,53 +121,6 @@ void ObjectRenderable::render(ApplicationPtr app) const {
     if (!this->isInitialized || !this->shader) return;
 
     glBindVertexArray(app->VAO[this->type]);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, 1);
     updateShaderUniformVariableMVP(this->shader, app->getMVP());
-
-    glDrawArrays(GL_TRIANGLES, 0, this->vertices.size());
+    glDrawElements(GL_TRIANGLES, this->vertices.size(), GL_UNSIGNED_INT, nullptr);
 }
-
-void ObjectRenderable::generateTextures() {
-    GLuint textureName = 0;
-    glGenTextures(1, &textureName);
-
-
-    glBindTexture(GL_TEXTURE_2D, textureName);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    stbi_set_flip_vertically_on_load(true);
-
-    int width, height, nChannels;
-    unsigned char* imageData = stbi_load(("objects/" + this->material->image).c_str(), &width, &height, &nChannels, 0);
-    if (imageData) {
-        // Carrega os dados da imagem para o Objeto de Textura vinculado ao target da face
-        glTexImage2D(GL_TEXTURE_2D,
-            0,					// Nível do Mipmap
-            GL_RGB,				// Formato interno do OpenGL
-            width, height,		// width, height
-            0,					// border
-            nChannels == 4 ? GL_RGBA : GL_RGB,	// Formato da imagem
-            GL_UNSIGNED_BYTE,	// Tipos dos dados da imagem
-            imageData);			// Apontador para os dados da imagem de textura
-
-        // Gera o Mipmap para essa textura
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        // Liberta a imagem da memória do CPU
-        stbi_image_free(imageData);
-
-        GLenum error = glGetError();
-        if (error != GL_NO_ERROR) {
-            std::cout << "OpenGL Error: " << error << std::endl;
-        }
-    }
-    else {
-        std::cout << "Error loading texture!" << std::endl;
-    }
-}
-

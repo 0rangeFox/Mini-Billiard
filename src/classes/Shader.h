@@ -5,7 +5,7 @@
 #ifndef MINI_BILLIARD_SHADER_H
 #define MINI_BILLIARD_SHADER_H
 
-#include <GLFW/glfw3.h>
+#include <GL/glew.h>
 
 typedef struct {
     GLenum type;

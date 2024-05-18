@@ -32,7 +32,7 @@ private:
     Material* material = nullptr;
     GLfloat* elements = nullptr;
     GLuint* indices = nullptr;
-    GLuint shader = 0;
+    GLuint shader, texture;
     std::vector<glm::vec3> vertices{}, normals{};
     std::vector<glm::vec2> uvs{};
 
