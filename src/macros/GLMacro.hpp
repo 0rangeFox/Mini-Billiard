@@ -6,20 +6,14 @@
 #define MINI_BILLIARD_GLMACRO_HPP
 
 #if _WIN32 || _WIN64
-    #define glBufferStore(data, size) \
-        glBufferStorage(GL_ARRAY_BUFFER, size, data, 0);
-
-    #define glElementBufferStore(data, size) \
-        glBufferStorage(GL_ELEMENT_ARRAY_BUFFER, size, data, 0);
+    #define glBufferStore(type, data, size) \
+        glBufferStorage(type, size, data, 0);
 
     #define glGetProgramResLoc(program, name) \
         glGetProgramResourceLocation(program, GL_PROGRAM_INPUT, name);
 #elif __APPLE__
-    #define glBufferStore(data, size) \
-        glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-
-    #define glElementBufferStore(data, size) \
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+    #define glBufferStore(type, data, size) \
+        glBufferData(type, size, data, GL_STATIC_DRAW);
 
     #define glGetProgramResLoc(program, name) \
         glGetAttribLocation(program, name);

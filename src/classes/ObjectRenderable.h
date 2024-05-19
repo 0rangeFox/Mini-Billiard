@@ -5,16 +5,12 @@
 #ifndef MINI_BILLIARD_OBJECTRENDERABLE_H
 #define MINI_BILLIARD_OBJECTRENDERABLE_H
 
-#include <GL/glew.h>
-#include <glm/glm.hpp>
+#include "../app/Application.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "../classes/Material.h"
 #include "../classes/Shader.h"
 #include "../classes/ObjectType.h"
-
-class Application;
-typedef const Application* AppPtr;
 
 class ObjectRenderable {
 public:
@@ -23,23 +19,23 @@ public:
 
     GLuint getTotalElements() const { return this->vertices.size() * 3 + this->normals.size() * 3 + this->uvs.size() * 2; }
 
-    void assemble(AppPtr);
-    void render(AppPtr) const;
+    bool assemble(ApplicationPtr);
+    void render(ApplicationPtr) const;
 
 private:
     bool isInitialized;
     ObjectType type;
-    Material* material = nullptr;
-    GLfloat* elements = nullptr;
+    MaterialPtr material = nullptr;
     GLuint* indices = nullptr;
+    GLfloat* elements = nullptr;
     GLuint shader, texture;
     std::vector<glm::vec3> vertices{}, normals{};
     std::vector<glm::vec2> uvs{};
 
-    void generateIndices();
-    void generateElements();
-    void generateShaders();
-    void generateTextures();
+    bool generateIndices();
+    bool generateElements();
+    bool generateShaders();
+    bool generateTextures(ApplicationPtr);
 };
 
 #endif //MINI_BILLIARD_OBJECTRENDERABLE_H

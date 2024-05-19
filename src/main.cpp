@@ -1,4 +1,5 @@
 #include "app/Application.h"
+#include "classes/ObjectRenderable.h"
 
 int main() {
     Application app { TITLE, WIDTH, HEIGHT };

@@ -8,8 +8,18 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 
-static void ErrorCallback(int error, const char *description) {
-    std::cout << "GLFW got an error: " << description << " (Code: " << error << ")" << std::endl;
+static void ErrorCallback(int error, const char* description) {
+    std::cout << "OpenGL Error: " << description << " (Code: " << error << ")" << std::endl;
+}
+
+static bool CheckErrorAndLog(const std::string& message) {
+    const GLenum error = glGetError();
+
+    if (error == GL_NO_ERROR)
+        return true;
+
+    ErrorCallback(error, message.c_str());
+    return false;
 }
 
 #endif //MINI_BILLIARD_ERRORCALLBACK_HPP

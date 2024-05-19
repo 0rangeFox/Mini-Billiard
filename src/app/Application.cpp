@@ -4,24 +4,30 @@
 
 #include "Application.h"
 
+#include <chrono>
+#if _WIN32 || _WIN64
+#include "../callbacks/DebugCallback.hpp"
+#endif
 #include "../callbacks/ErrorCallback.hpp"
 #include "../callbacks/MouseButtonCallback.hpp"
 #include "../callbacks/MouseMoveCallback.hpp"
 #include "../callbacks/MouseScrollCallback.hpp"
+#include "../classes/ObjectRenderable.h"
 
 Application::Application(const char* title, int width, int height) {
     this->width = width;
     this->height = height;
     this->zoom = 10.f;
     this->angle = 0.f;
+    this->textures = new std::unordered_map<GLuint, GLuint>();
     glewExperimental = GL_TRUE;
 
     glfwSetErrorCallback(ErrorCallback);
 
     if (!glfwInit()) return;
 
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-
 #if _WIN32 || _WIN64
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 #elif __APPLE__
@@ -36,7 +42,15 @@ Application::Application(const char* title, int width, int height) {
     if (!this->actualWindow || glewInit() != GLEW_OK || !this->setupVAOsAndVBOs())
         return;
 
+#if _WIN32 || _WIN64
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(DebugCallback, nullptr);
+#endif
+
+    glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, this->width, this->height);
+
+    this->isInitialized = true;
 }
 
 Application::~Application() {
@@ -44,11 +58,23 @@ Application::~Application() {
 
     for (const ObjectRenderable* obj : this->objects)
         delete obj;
+
+    for (auto tex : *this->textures) {
+        glBindTexture(GL_TEXTURE_2D, tex.second);
+        std::cout << tex.second << " | " << (int) glIsTexture(tex.second) << std::endl;
+        glDeleteTextures(1, &tex.second);
+        std::cout << tex.second << " | " << (int) glIsTexture(tex.second) << std::endl;
+    }
+
+
+    delete this->textures;
 }
 
-void Application::addObject(ObjectRenderable* obj) {
-    obj->assemble(this);
-    this->objects.push_back(obj);
+bool Application::addObject(ObjectRenderable* obj) {
+    bool isAssembledSuccessfully = obj->assemble(this);
+    if (isAssembledSuccessfully)
+        this->objects.push_back(obj);
+    return isAssembledSuccessfully;
 }
 
 float Application::setAngle(float angle) {
@@ -94,10 +120,26 @@ void Application::updateCamera() {
     this->mvp = projection * view * model;
 }
 
+template<typename T, typename R>
+GLint getMaxVAOs(const std::chrono::duration<T, R>& duration) {
+    std::vector<GLuint> vVAOs;
+    auto startTime = std::chrono::high_resolution_clock::now();
+
+    do {
+        GLuint vao;
+        glGenVertexArrays(1, &vao);
+        vVAOs.push_back(vao);
+    } while (glGetError() == GL_NO_ERROR && std::chrono::high_resolution_clock::now() - startTime <= duration);
+
+    for (GLuint vao : vVAOs)
+        glDeleteVertexArrays(1, &vao);
+
+    return vVAOs.size();
+}
+
 bool Application::setupVAOsAndVBOs() {
-    GLint maxVAOs, maxVBOs;
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVAOs);
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIB_BINDINGS, &maxVBOs);
+    GLint maxVAOs = getMaxVAOs(std::chrono::microseconds(60)), maxVBOs;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVBOs);
 
     if (VAOs > maxVAOs || VBOs > maxVBOs)
         return false;
@@ -109,6 +151,9 @@ bool Application::setupVAOsAndVBOs() {
 }
 
 int Application::run() {
+    if (!this->isInitialized)
+        return EXIT_FAILURE;
+
     this->updateCamera();
 
     glfwSetWindowUserPointer(this->actualWindow, this);
@@ -119,7 +164,6 @@ int Application::run() {
     glfwSetScrollCallback(this->actualWindow, MouseScrollCallback);
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glEnable(GL_DEPTH_TEST);
 
     while (!glfwWindowShouldClose(this->actualWindow)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -131,5 +175,5 @@ int Application::run() {
         glfwPollEvents();
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

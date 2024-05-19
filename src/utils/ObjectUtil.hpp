@@ -6,8 +6,6 @@
 #define MINI_BILLIARD_OBJECTUTIL_HPP
 
 #include <glm/glm.hpp>
-#include <iostream>
-#include <vector>
 #include "FileUtil.hpp"
 
 #define HEADER_MATERIAL "mtllib"

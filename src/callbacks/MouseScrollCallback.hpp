@@ -5,7 +5,6 @@
 #ifndef MINI_BILLIARD_MOUSESCROLLCALLBACK_HPP
 #define MINI_BILLIARD_MOUSESCROLLCALLBACK_HPP
 
-#include <GLFW/glfw3.h>
 #include "../app/Application.h"
 
 static void MouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset) {

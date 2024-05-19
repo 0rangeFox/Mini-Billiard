@@ -11,6 +11,6 @@ typedef struct {
     GLenum type;
     const char* filename;
     GLuint component;
-} Shader;
+} Shader, * ShaderPtr;
 
 #endif //MINI_BILLIARD_SHADER_H

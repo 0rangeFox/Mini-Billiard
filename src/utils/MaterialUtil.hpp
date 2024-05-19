@@ -5,7 +5,6 @@
 #ifndef MINI_BILLIARD_MATERIALUTIL_HPP
 #define MINI_BILLIARD_MATERIALUTIL_HPP
 
-#include <iostream>
 #include "FileUtil.hpp"
 #include "../classes/Material.h"
 
@@ -16,7 +15,7 @@
 #define HEADER_SPECULAR_COLOR "Ks"
 #define HEADER_IMAGE "map_Kd"
 
-static Material* LoadMaterial(const std::string& path) {
+static MaterialPtr LoadMaterial(const std::string& path) {
     auto* material = new Material{};
     if (!ReadFile(path, [material](const std::string& line) {
         if (!line.rfind(HEADER_NAME))

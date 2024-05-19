@@ -5,8 +5,6 @@
 #ifndef MINI_BILLIARD_MOUSEMOVECALLBACK_HPP
 #define MINI_BILLIARD_MOUSEMOVECALLBACK_HPP
 
-#include <tuple>
-#include <GLFW/glfw3.h>
 #include "../app/Application.h"
 
 static void MouseMoveCallback(GLFWwindow* window, double posX, double posY) {

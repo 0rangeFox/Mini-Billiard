@@ -5,7 +5,6 @@
 #include "ObjectRenderable.h"
 
 #include "../macros/GLMacro.hpp"
-#include "../app/Application.h"
 #include "../utils/ObjectUtil.hpp"
 #include "../utils/MaterialUtil.hpp"
 #include "../utils/ShaderUtil.hpp"
@@ -23,21 +22,21 @@ ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& pa
 
 ObjectRenderable::~ObjectRenderable() {
     glDeleteProgram(this->shader);
-    glDeleteTextures(1, &this->texture);
 
     delete this->material;
-    delete[] this->elements;
     delete[] this->indices;
+    delete[] this->elements;
 }
 
-void ObjectRenderable::generateIndices() {
+bool ObjectRenderable::generateIndices() {
     this->indices = new GLuint[this->vertices.size()];
     for (int i = 0; i < this->vertices.size(); ++i)
         this->indices[i] = i;
+    return true;
 }
 
-void ObjectRenderable::generateElements() {
-    GLfloat* elements = new GLfloat[this->getTotalElements()];
+bool ObjectRenderable::generateElements() {
+    this->elements = new GLfloat[this->getTotalElements()];
     GLuint counter = 0;
 
     for (int i = 0; i < this->vertices.size(); i++) {
@@ -46,54 +45,68 @@ void ObjectRenderable::generateElements() {
         glm::vec2 vUVs = this->uvs[i];
 
         // X Y Z
-        elements[counter++] = vVertices.x;
-        elements[counter++] = vVertices.y;
-        elements[counter++] = vVertices.z;
+        this->elements[counter++] = vVertices.x;
+        this->elements[counter++] = vVertices.y;
+        this->elements[counter++] = vVertices.z;
 
         // NX NY NZ
-        elements[counter++] = vNormals.x;
-        elements[counter++] = vNormals.y;
-        elements[counter++] = vNormals.z;
+        this->elements[counter++] = vNormals.x;
+        this->elements[counter++] = vNormals.y;
+        this->elements[counter++] = vNormals.z;
 
-        // UVX UVY
-        elements[counter++] = vUVs.x;
-        elements[counter++] = vUVs.y;
+        // U V
+        this->elements[counter++] = vUVs.x;
+        this->elements[counter++] = vUVs.y;
     }
 
-    this->elements = elements;
+    return counter == this->getTotalElements();
 }
 
-void ObjectRenderable::generateShaders() {
+bool ObjectRenderable::generateShaders() {
     Shader shaders[] = {
         { GL_VERTEX_SHADER, "shaders/ball.vert" },
         { GL_FRAGMENT_SHADER, "shaders/ball.frag" },
         { GL_NONE, nullptr }
     };
 
-    this->shader = LoadShader(shaders);
-}
-
-void ObjectRenderable::generateTextures() {
-    this->texture = LoadTexture(this->material->name, "objects/" + this->material->image, true);
-}
-
-void ObjectRenderable::assemble(AppPtr app) {
-    this->generateElements();
-    this->generateIndices();
-    this->generateShaders();
-    this->generateTextures();
-
-    glBindVertexArray(app->VAO[this->type]);
-
-    glBindBuffer(GL_ARRAY_BUFFER, app->VBO[VBO_DATA]);
-    glBufferStore(this->elements, this->getTotalElements() * sizeof(GLfloat));
-
-    if (this->indices) {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, app->VBO[VBO_EBO]);
-        glElementBufferStore(this->indices, this->vertices.size() * sizeof(GLuint))
-    }
+    if ((this->shader = LoadShader(shaders)) <= 0)
+        return false;
 
     glUseProgram(this->shader);
+    return true;
+}
+
+bool ObjectRenderable::generateTextures(ApplicationPtr app) {
+    this->texture = LoadTexture(this->material->name, "objects/" + this->material->image, true, app->getTexturesCache());
+    this->texture = LoadTexture(this->material->name, "objects/" + this->material->image, app->getTexturesCache());
+    return this->texture > 0;
+}
+
+// Unbind the actual VAO and Texture
+void unbindTexturesAndVAO() {
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+bool ObjectRenderable::assemble(ApplicationPtr app) {
+    glBindVertexArray(app->getVAO(this->type));
+
+    if (!this->generateIndices() ||
+        !this->generateElements() ||
+        !this->generateShaders() ||
+        !this->generateTextures(app)
+    ) {
+        unbindTexturesAndVAO();
+        return this->isInitialized = false;
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, app->getVBO(VBO_DATA));
+    glBufferStore(GL_ARRAY_BUFFER, this->elements, this->getTotalElements() * sizeof(GLfloat));
+
+    if (this->indices) {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, app->getVBO(VBO_EBO));
+        glBufferStore(GL_ELEMENT_ARRAY_BUFFER, this->indices, this->vertices.size() * sizeof(GLuint))
+    }
 
     GLint verticesId = glGetProgramResLoc(this->shader, "vVertices")
     GLint normalsId = glGetProgramResLoc(this->shader, "vNormals")
@@ -109,7 +122,10 @@ void ObjectRenderable::assemble(AppPtr app) {
     glEnableVertexAttribArray(uvsId);
 
     GLint locationTexSampler = glGetUniformLocation(this->shader, "textureMapping");
-    glProgramUniform1i(this->shader, locationTexSampler, this->texture);
+    glProgramUniform1i(this->shader, locationTexSampler, 0);
+
+    unbindTexturesAndVAO();
+    return CheckErrorAndLog("Couldn't assemble the object \"" + this->material->name + "\".");
 }
 
 static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp) {
@@ -120,7 +136,8 @@ static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp) 
 void ObjectRenderable::render(ApplicationPtr app) const {
     if (!this->isInitialized || !this->shader) return;
 
-    glBindVertexArray(app->VAO[this->type]);
+    glBindVertexArray(app->getVAO(this->type));
+    glBindTexture(GL_TEXTURE_2D, this->texture);
     updateShaderUniformVariableMVP(this->shader, app->getMVP());
     glDrawElements(GL_TRIANGLES, this->vertices.size(), GL_UNSIGNED_INT, nullptr);
 }

@@ -6,17 +6,21 @@
 #define MINI_BILLIARD_APPLICATION_H
 
 #include <tuple>
+#include <unordered_map>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include "../Constants.h"
-#include "../classes/ObjectRenderable.h"
+#include "../classes/ObjectType.h"
 
 typedef std::tuple<double, double> MouseCoord;
 typedef std::tuple<MouseCoord, MouseCoord> MouseCoords;
+typedef std::unordered_map<GLuint, GLuint>* TexturesCache;
+
+class ObjectRenderable;
 
 class Application {
 public:
-    GLuint VAO[VAOs]{};
-    GLuint VBO[VBOs]{};
-
     Application(const char*, int, int);
     ~Application();
 
@@ -42,9 +46,13 @@ public:
     bool isMouseLeftButtonDown() const { return this->mouseLeftButtonDownStatus; }
     void setMouseLeftButtonDown(bool status) { this->mouseLeftButtonDownStatus = status; }
 
-    void addObject(ObjectRenderable*);
+    const GLuint getVAO(ObjectType type) const { return this->VAO[type]; }
+    const GLuint getVBO(GLuint type) const { return this->VBO[type]; }
+
+    bool addObject(ObjectRenderable*);
 
     const glm::mat4& getMVP() const { return this->mvp; }
+    const TexturesCache getTexturesCache() const { return this->textures; }
 
     /// Set a value to the angle
     /// \return  The last angle value
@@ -67,13 +75,17 @@ public:
     int run();
 
 private:
+    bool isInitialized, mouseLeftButtonDownStatus;
     int width, height;
     float angle, zoom;
-    bool mouseLeftButtonDownStatus = false;
     MouseCoord mouseX{ 0, 0 }, mouseY{ 0, 0 };
-    glm::mat4 mvp{ .0f };
 
     GLFWwindow* actualWindow;
+    glm::mat4 mvp{ .0f };
+
+    GLuint VAO[VAOs]{};
+    GLuint VBO[VBOs]{};
+    TexturesCache textures;
     std::vector<const ObjectRenderable*> objects;
 
     bool setupVAOsAndVBOs();

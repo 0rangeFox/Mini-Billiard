@@ -5,9 +5,9 @@
 #ifndef MINI_BILLIARD_MATERIAL_H
 #define MINI_BILLIARD_MATERIAL_H
 
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 #include <iostream>
+#include <GL/glew.h>
+#include <glm/glm.hpp>
 
 typedef struct {
     std::string name; // (newmtl)
@@ -16,6 +16,6 @@ typedef struct {
     glm::vec3 diffuse_color; // (Kd)
     glm::vec3 specular_color; // (Ks)
     std::string image; // (map_Kd)
-} Material;
+} Material, * MaterialPtr;
 
 #endif //MINI_BILLIARD_MATERIAL_H
