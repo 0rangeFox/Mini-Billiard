@@ -3,8 +3,8 @@
 
 int main() {
     const std::unordered_map<FileType, File> shaderFiles {
-        { FileType::VERTEX_SHADER, File("shaders/ball.vert") },
-        { FileType::FRAGMENT_SHADER, File("shaders/ball.frag") }
+        { FileType::VERTEX_SHADER, "shaders/ball.vert" },
+        { FileType::FRAGMENT_SHADER, "shaders/ball.frag" }
     };
 
     Application app { TITLE, WIDTH, HEIGHT };

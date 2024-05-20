@@ -24,6 +24,8 @@ public:
         this->path = path.substr(0, namePos - 1);
     }
 
+    File(const char* path) : File(std::string(path)) {}
+
     std::string getPath() const { return this->path + '/'; }
     const std::string& getExtension() const { return this->extension; }
     const std::string& getName() const { return this->fileName; }
@@ -31,6 +33,10 @@ public:
     std::string getFullPath() const { return this->getPath() + this->getNameWithExtension(); }
 
     File copyPathToFile(const std::string& file) const { return File{ this->getPath() + file }; }
+
+    operator std::string() const {
+
+    }
 
 private:
     FileType type;
