@@ -8,8 +8,12 @@
 #include <stdio.h>
 #include <GL/glew.h>
 
+// https://www.khronos.org/opengl/wiki/OpenGL_Error#Catching_errors_.28the_easy_way.29
 static void GLAPIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
-    fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n", (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ), type, severity, message);
+    if (type == GL_DEBUG_TYPE_ERROR)
+        fprintf(stderr, "OpenGL ERROR: %s (Code: 0x%x | Severity: 0x%x)\n", message, source, severity);
+    else
+        fprintf(stdout, "OpenGL INFO: %s\n", message);
 }
 
 #endif //MINI_BILLIARD_DEBUGCALLBACK_HPP

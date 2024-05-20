@@ -3,13 +3,14 @@
 
 int main() {
     const std::unordered_map<FileType, File> shaderFiles {
-            { FileType::VERTEX_SHADER, File("shaders/ball.vert") },
-            { FileType::FRAGMENT_SHADER, File("shaders/ball.frag") }
+        { FileType::VERTEX_SHADER, File("shaders/ball.vert") },
+        { FileType::FRAGMENT_SHADER, File("shaders/ball.frag") }
     };
 
     Application app { TITLE, WIDTH, HEIGHT };
 
-    app.addObject(new ObjectRenderable(ObjectType::BALL, "./objects/Ball1.obj", shaderFiles));
+    for (int i = 1; i <= TOTAL_BALLS; ++i)
+        app.addObject(new ObjectRenderable(ObjectType::BALL, "./PoolBalls/Ball" + std::to_string(i) + ".obj", shaderFiles));
 
     return app.run();
 }

@@ -9,6 +9,8 @@
 #define WIDTH 800
 #define HEIGHT 600
 
+#define TOTAL_BALLS 15
+
 #define VAOs 2
 #define VBOs 2 // Data & EBO
 

@@ -7,9 +7,10 @@
 
 #include <iostream>
 #include <GLFW/glfw3.h>
+#include "DebugCallback.hpp"
 
-static void ErrorCallback(int error, const char* description) {
-    std::cout << "OpenGL Error: " << description << " (Code: " << error << ")" << std::endl;
+static void ErrorCallback(int error, const char* message) {
+    DebugCallback(error, GL_DEBUG_TYPE_ERROR, 0, 0, 0, message, nullptr);
 }
 
 static bool CheckErrorAndLog(const std::string& message) {

@@ -54,18 +54,13 @@ Application::Application(const char* title, int width, int height) {
 }
 
 Application::~Application() {
-    glfwTerminate();
-
     for (const ObjectRenderable* obj : this->objects)
         delete obj;
 
-    for (auto tex : *this->textures) {
-        glBindTexture(GL_TEXTURE_2D, tex.second);
-        std::cout << tex.second << " | " << (int) glIsTexture(tex.second) << std::endl;
+    for (auto tex : *this->textures)
         glDeleteTextures(1, &tex.second);
-        std::cout << tex.second << " | " << (int) glIsTexture(tex.second) << std::endl;
-    }
 
+    glfwTerminate();
 
     delete this->textures;
 }
