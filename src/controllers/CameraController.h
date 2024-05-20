@@ -23,7 +23,7 @@ public:
     glm::mat4 translate(const glm::vec3&, const glm::vec3&) const;
 
     float getAngle() const { return this->angle; }
-    float getZoom() const { return this->zoom; }
+    float getZoom() const { return this->zoom[0][0]; }
 
     float updateFOV(float);
 
@@ -49,9 +49,9 @@ private:
     const Application* application;
 
     glm::vec3 position, target;
-    float fov, angle, zoom;
+    float fov, angle;
 
-    glm::mat4 projection, view, model{ 1.f };
+    glm::mat4 zoom, projection, view, model{ 1.f };
     glm::mat4 mvp{ .0f };
 
     void refresh();

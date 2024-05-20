@@ -13,11 +13,8 @@ static void MouseButtonCallback(GLFWwindow* window, int button, int action, int 
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
         if (action == GLFW_PRESS)
             app->setMouseLeftButtonDown(true);
-        else if (action == GLFW_RELEASE) {
+        else if (action == GLFW_RELEASE)
             app->setMouseLeftButtonDown(false);
-            app->getCameraPtr()->setAngle(0);
-        }
-
     }
 }
 
