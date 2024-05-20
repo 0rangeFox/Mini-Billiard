@@ -11,10 +11,11 @@
 #include <functional>
 #include <algorithm>
 #include <sstream>
+#include "../classes/FileType.h"
 
-static std::vector<std::string> ReadFile(const std::string& fileName) {
+static std::vector<std::string> ReadFile(const std::string& path) {
     std::vector<std::string> lines;
-    std::ifstream file(fileName);
+    std::ifstream file(path);
 
     if (file.is_open()) {
         std::string line;
@@ -24,20 +25,31 @@ static std::vector<std::string> ReadFile(const std::string& fileName) {
 
         file.close();
     } else
-        std::cerr << "Error: Unable to open file " << fileName << std::endl;
+        std::cerr << "Error: Unable to open file " << path << std::endl;
 
     return lines;
 }
 
-static bool ReadFile(const std::string& fileName, const std::function<bool(const std::string&)>& lineCallback) {
-//    for (const std::string& line : ReadFile(fileName))
-//        if (!lineCallback(line))
-//            return false;
-//    return true;
-
-    // The above code is same as this
-    auto lines = ReadFile(fileName);
+static bool ReadFile(const std::string& path, const std::function<bool(const std::string&)>& lineCallback) {
+    auto lines = ReadFile(path);
     return std::all_of(lines.begin(), lines.end(), lineCallback);
+}
+
+static FileType GetFileType(const std::string& path) {
+    const std::string& extension = path.substr(path.find_last_of('.') + 1);
+
+    if (extension == "jpg" || extension == "jpeg" || extension == "png")
+        return FileType::IMAGE;
+    else if (extension == "obj")
+        return FileType::OBJECT;
+    else if (extension == "mtl")
+        return FileType::MATERIAL;
+    else if (extension == "vert")
+        return FileType::VERTEX_SHADER;
+    else if (extension == "frag")
+        return FileType::FRAGMENT_SHADER;
+    else
+        return FileType::UNKNOWN;
 }
 
 #endif //MINI_BILLIARD_FILEUTIL_HPP

@@ -16,7 +16,7 @@
 #define HEADER_IMAGE "map_Kd"
 
 static MaterialPtr LoadMaterial(const std::string& path) {
-    auto* material = new Material{};
+    auto* material = new Material{ File(path) };
     if (!ReadFile(path, [material](const std::string& line) {
         if (!line.rfind(HEADER_NAME))
             std::istringstream(line.substr(6)) >> material->name;
@@ -28,8 +28,11 @@ static MaterialPtr LoadMaterial(const std::string& path) {
             std::istringstream(line.substr(2)) >> material->diffuse_color.r >> material->diffuse_color.g >> material->diffuse_color.b;
         else if (!line.rfind(HEADER_SPECULAR_COLOR))
             std::istringstream(line.substr(2)) >> material->specular_color.r >> material->specular_color.g >> material->specular_color.b;
-        else if (!line.rfind(HEADER_IMAGE))
-            std::istringstream(line.substr(6)) >> material->image;
+        else if (!line.rfind(HEADER_IMAGE)) {
+            std::string imageName;
+            std::istringstream(line.substr(6)) >> imageName;
+            material->image = material->file.copyPathToFile(imageName);
+        }
 
         return true;
     }))

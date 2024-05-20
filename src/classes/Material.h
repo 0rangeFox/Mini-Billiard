@@ -8,14 +8,17 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include "../classes/File.h"
 
 typedef struct {
+    File file;
+
     std::string name; // (newmtl)
     GLfloat specular_exponent; // (Ns)
     glm::vec3 ambient_color; // Coeficiente de reflexão da luz ambiente (Ka)
     glm::vec3 diffuse_color; // (Kd)
     glm::vec3 specular_color; // (Ks)
-    std::string image; // (map_Kd)
+    File image; // (map_Kd)
 } Material, * MaterialPtr;
 
 #endif //MINI_BILLIARD_MATERIAL_H

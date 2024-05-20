@@ -39,7 +39,7 @@ static GLuint LoadShader(ShaderPtr shader) {
     for (GLint i = 0; shader[i].type != GL_NONE; i++) {
         shader[i].component = glCreateShader(shader[i].type);
 
-        const std::string& fileContents = GetStringFromVector(ReadFile(shader[i].filename));
+        const std::string& fileContents = GetStringFromVector(ReadFile(shader[i].file->getFullPath()));
         if (fileContents.empty())
             return UnloadShader(shader);
 

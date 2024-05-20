@@ -13,11 +13,21 @@
 ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) {
     std::string _material{};
 
+    this->addResource(FileType::OBJECT, File(path));
     this->type = type;
     this->isInitialized = LoadOBJ(path, _material, this->vertices, this->uvs, this->normals);
 
-    if (!_material.empty())
-        this->material = LoadMaterial(path.substr(0, path.find_last_of('/')) + '/' + _material);
+    if (!_material.empty()) {
+        this->addResource(FileType::MATERIAL, this->getResource<FileType::OBJECT>().copyPathToFile(_material));
+        this->material = LoadMaterial(this->getResource<FileType::MATERIAL>().getFullPath());
+
+        if (this->material)
+            this->addResource(FileType::IMAGE, this->material->image);
+    }
+}
+
+ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path, const std::unordered_map<FileType, File>& extraFiles) : ObjectRenderable(type, path) {
+    this->files.insert(extraFiles.begin(), extraFiles.end());
 }
 
 ObjectRenderable::~ObjectRenderable() {
@@ -64,8 +74,8 @@ bool ObjectRenderable::generateElements() {
 
 bool ObjectRenderable::generateShaders() {
     Shader shaders[] = {
-        { GL_VERTEX_SHADER, "shaders/ball.vert" },
-        { GL_FRAGMENT_SHADER, "shaders/ball.frag" },
+        { GL_VERTEX_SHADER, &this->getResource<FileType::VERTEX_SHADER>() },
+        { GL_FRAGMENT_SHADER, &this->getResource<FileType::FRAGMENT_SHADER>() },
         { GL_NONE, nullptr }
     };
 
@@ -77,8 +87,8 @@ bool ObjectRenderable::generateShaders() {
 }
 
 bool ObjectRenderable::generateTextures(ApplicationPtr app) {
-    this->texture = LoadTexture(this->material->name, "objects/" + this->material->image, true, app->getTexturesCache());
-    this->texture = LoadTexture(this->material->name, "objects/" + this->material->image, app->getTexturesCache());
+    this->texture = LoadTexture(this->material->name, this->material->image.getFullPath(), true, app->getTexturesCache());
+    this->texture = LoadTexture(this->material->name, this->material->image.getFullPath(), app->getTexturesCache());
     return this->texture > 0;
 }
 

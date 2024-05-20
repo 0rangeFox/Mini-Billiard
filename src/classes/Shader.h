@@ -6,10 +6,11 @@
 #define MINI_BILLIARD_SHADER_H
 
 #include <GL/glew.h>
+#include "../classes/File.h"
 
 typedef struct {
     GLenum type;
-    const char* filename;
+    const File* file;
     GLuint component;
 } Shader, * ShaderPtr;
 
