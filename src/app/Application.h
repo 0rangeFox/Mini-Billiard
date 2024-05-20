@@ -9,8 +9,8 @@
 #include <unordered_map>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 #include "../Constants.h"
+#include "../controllers/CameraController.h"
 #include "../classes/ObjectType.h"
 
 typedef std::tuple<double, double> MouseCoord;
@@ -24,8 +24,7 @@ public:
     Application(const char*, int, int);
     ~Application();
 
-    float getAngle() const { return this->angle; }
-    float getZoom() const { return this->zoom; }
+    float getAspectRatio() const { return this->aspectRatio; }
 
     /// Update the coordinates of mouse
     /// \param x The new position in X
@@ -51,37 +50,21 @@ public:
 
     bool addObject(ObjectRenderable*);
 
-    const glm::mat4& getMVP() const { return this->mvp; }
+    const CameraController& getCamera() const { return this->camera; }
+    CameraController* const getCameraPtr() { return &this->camera; }
     const TexturesCache getTexturesCache() const { return this->textures; }
-
-    /// Set a value to the angle
-    /// \return  The last angle value
-    float setAngle(float);
-
-    /// Update the angle with the value (Without replacing, it's only sum with the value)
-    /// \param angle The value to be summed into the angle
-    /// \return
-    float updateAngle(float angle);
-
-    /// Set a value to the zoom
-    /// \return The last zoom value
-    float setZoom(float);
-
-    /// Update the zoom with the value (Without replacing, it's only sum with the value)
-    /// \param zoom The value to be summed into the zoom
-    /// \return The new zoom value
-    float updateZoom(float zoom);
 
     int run();
 
 private:
     bool isInitialized, mouseLeftButtonDownStatus;
     int width, height;
-    float angle, zoom;
+    float aspectRatio;
+
     MouseCoord mouseX{ 0, 0 }, mouseY{ 0, 0 };
 
     GLFWwindow* actualWindow;
-    glm::mat4 mvp{ .0f };
+    CameraController camera{ this };
 
     GLuint VAO[VAOs]{};
     GLuint VBO[VBOs]{};
@@ -89,7 +72,6 @@ private:
     std::vector<const ObjectRenderable*> objects;
 
     bool setupVAOsAndVBOs();
-    void updateCamera();
 };
 
 typedef const Application* ApplicationPtr;

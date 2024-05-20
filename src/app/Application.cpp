@@ -4,6 +4,7 @@
 
 #include "Application.h"
 
+#include <cstdlib>
 #include <chrono>
 #if _WIN32 || _WIN64
 #include "../callbacks/DebugCallback.hpp"
@@ -17,11 +18,11 @@
 Application::Application(const char* title, int width, int height) {
     this->width = width;
     this->height = height;
-    this->zoom = 10.f;
-    this->angle = 0.f;
+    this->aspectRatio = float(this->width) / float(this->height);
     this->textures = new std::unordered_map<GLuint, GLuint>();
     glewExperimental = GL_TRUE;
 
+    std::srand((unsigned int) std::time(nullptr));
     glfwSetErrorCallback(ErrorCallback);
 
     if (!glfwInit()) return;
@@ -49,6 +50,7 @@ Application::Application(const char* title, int width, int height) {
 
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, this->width, this->height);
+    this->camera.refresh();
 
     this->isInitialized = true;
 }
@@ -70,49 +72,6 @@ bool Application::addObject(ObjectRenderable* obj) {
     if (isAssembledSuccessfully)
         this->objects.push_back(obj);
     return isAssembledSuccessfully;
-}
-
-float Application::setAngle(float angle) {
-    float oldAngle = this->angle;
-    this->angle = angle;
-    this->updateCamera();
-    return oldAngle;
-}
-
-float Application::updateAngle(float angle) {
-    float newAngle = this->angle + angle;
-    this->setAngle(newAngle);
-    return angle;
-}
-
-float Application::setZoom(float zoom) {
-    float oldZoom = this->zoom;
-    this->zoom = zoom;
-    this->updateCamera();
-    return oldZoom;
-}
-
-float Application::updateZoom(float zoom) {
-    float newZoom = this->zoom + zoom;
-    this->setZoom(newZoom);
-    return newZoom;
-}
-
-void Application::updateCamera() {
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(this->width) / float(this->height), 0.1f, 100.f);
-
-    glm::mat4 view = glm::lookAt(
-        glm::vec3(0.0f, 5.0f, this->zoom),
-        glm::vec3(0.0f, 0.f, -1.0f),
-        glm::vec3(0.0f, 1.f, 0.0f)
-    );
-
-    // Rotations
-    // https://www.songho.ca/opengl/files/gl_camera07.jpg
-    // https://learnopengl.com/img/getting-started/camera_pitch_yaw_roll.png
-    glm::mat4 model = glm::rotate(glm::mat4(1.0f), this->angle, glm::normalize(glm::vec3(0.f, 1.f, 0.f)));
-
-    this->mvp = projection * view * model;
 }
 
 template<typename T, typename R>
@@ -148,8 +107,6 @@ bool Application::setupVAOsAndVBOs() {
 int Application::run() {
     if (!this->isInitialized)
         return EXIT_FAILURE;
-
-    this->updateCamera();
 
     glfwSetWindowUserPointer(this->actualWindow, this);
 

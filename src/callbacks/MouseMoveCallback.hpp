@@ -19,9 +19,9 @@ static void MouseMoveCallback(GLFWwindow* window, double posX, double posY) {
         int dy = std::get<1>(mouseY) - std::get<0>(mouseY);
 
         if (dx < 0) // Rotating to left side
-            app->updateAngle(0.01f);
+            app->getCameraPtr()->updateAngle(0.01f);
         else if (dx > 0) // Rotating to right side
-            app->updateAngle(-0.01f);
+            app->getCameraPtr()->updateAngle(-0.01f);
     }
 }
 

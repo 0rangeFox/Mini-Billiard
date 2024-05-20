@@ -10,7 +10,7 @@
 #include "../utils/ShaderUtil.hpp"
 #include "../utils/TextureUtil.hpp"
 
-ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) {
+ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : Object(0, 1) {
     std::string _material{};
 
     this->addResource(FileType::OBJECT, File(path));
@@ -148,6 +148,6 @@ void ObjectRenderable::render(ApplicationPtr app) const {
 
     glBindVertexArray(app->getVAO(this->type));
     glBindTexture(GL_TEXTURE_2D, this->texture);
-    updateShaderUniformVariableMVP(this->shader, app->getMVP());
+    updateShaderUniformVariableMVP(this->shader, app->getCamera().getMVP());
     glDrawElements(GL_TRIANGLES, this->vertices.size(), GL_UNSIGNED_INT, nullptr);
 }

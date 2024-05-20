@@ -11,9 +11,9 @@ static void MouseScrollCallback(GLFWwindow* window, double xOffset, double yOffs
     auto app = (Application*) glfwGetWindowUserPointer(window);
 
     if (yOffset == 1) // Zoom in
-        app->updateZoom(fabs(app->getZoom()) * .25f);
+        app->getCameraPtr()->updateZoom(.25f);
     else if (yOffset == -1) // Zoom out
-        app->updateZoom(-fabs(app->getZoom()) * .25f);
+        app->getCameraPtr()->updateZoom(-.25f);
 }
 
 #endif //MINI_BILLIARD_MOUSESCROLLCALLBACK_HPP

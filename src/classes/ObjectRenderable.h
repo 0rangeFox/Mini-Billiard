@@ -8,12 +8,13 @@
 #include "../app/Application.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "../classes/File.h"
-#include "../classes/Material.h"
-#include "../classes/Shader.h"
-#include "../classes/ObjectType.h"
+#include "Object.h"
+#include "File.h"
+#include "Material.h"
+#include "Shader.h"
+#include "ObjectType.h"
 
-class ObjectRenderable {
+class ObjectRenderable: Object {
 public:
     ObjectRenderable(const ObjectType&, const std::string&);
     ObjectRenderable(const ObjectType&, const std::string&, const std::unordered_map<FileType, File>&);

@@ -34,9 +34,7 @@ public:
 
     File copyPathToFile(const std::string& file) const { return File{ this->getPath() + file }; }
 
-    operator std::string() const {
-
-    }
+    operator std::string() const { return this->getFullPath(); }
 
 private:
     FileType type;

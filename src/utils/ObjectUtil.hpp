@@ -35,7 +35,7 @@ static bool LoadOBJ(const std::string& path, std::string& material, std::vector<
             std::istringstream(line.substr(2)) >> normal.x >> normal.y >> normal.z;
             temp_normals.push_back(normal);
         } else if (!line.rfind(HEADER_FACE)) {
-#define VERTICES 3
+            #define VERTICES 3
             unsigned int vertexIndex[VERTICES], uvIndex[VERTICES], normalIndex[VERTICES];
 
             int matches = sscanf(line.substr(1).c_str(), "%d/%d/%d %d/%d/%d %d/%d/%d", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
