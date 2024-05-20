@@ -50,12 +50,12 @@ Application::Application(const char* title, int width, int height) {
 
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, this->width, this->height);
-    this->camera.refresh();
-
-    this->isInitialized = true;
+    this->isInitialized = this->camera.initialize(glm::vec3(.0f, 10.f, 20.f));
 }
 
 Application::~Application() {
+    glfwDestroyWindow(this->actualWindow);
+
     for (const ObjectRenderable* obj : this->objects)
         delete obj;
 

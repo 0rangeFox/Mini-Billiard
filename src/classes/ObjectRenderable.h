@@ -6,8 +6,6 @@
 #define MINI_BILLIARD_OBJECTRENDERABLE_H
 
 #include "../app/Application.h"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include "Object.h"
 #include "File.h"
 #include "Material.h"

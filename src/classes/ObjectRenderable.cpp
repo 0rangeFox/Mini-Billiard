@@ -4,14 +4,17 @@
 
 #include "ObjectRenderable.h"
 
+#include <glm/gtc/type_ptr.hpp>
 #include "../macros/GLMacro.hpp"
 #include "../utils/ObjectUtil.hpp"
 #include "../utils/MaterialUtil.hpp"
 #include "../utils/ShaderUtil.hpp"
 #include "../utils/TextureUtil.hpp"
 
-ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : Object(0, 1) {
+ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : Object(-1, 1) {
     std::string _material{};
+
+    this->position.y = 0;
 
     this->addResource(FileType::OBJECT, File(path));
     this->type = type;
@@ -95,6 +98,8 @@ bool ObjectRenderable::generateTextures(ApplicationPtr app) {
 // Unbind the actual VAO and Texture
 void unbindTexturesAndVAO() {
     glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -148,6 +153,6 @@ void ObjectRenderable::render(ApplicationPtr app) const {
 
     glBindVertexArray(app->getVAO(this->type));
     glBindTexture(GL_TEXTURE_2D, this->texture);
-    updateShaderUniformVariableMVP(this->shader, app->getCamera().getMVP());
+    updateShaderUniformVariableMVP(this->shader, app->getCamera().translate(this->position, this->orientation));
     glDrawElements(GL_TRIANGLES, this->vertices.size(), GL_UNSIGNED_INT, nullptr);
 }
