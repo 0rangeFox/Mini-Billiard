@@ -12,7 +12,6 @@
 #include "../utils/TextureUtil.hpp"
 
 ObjectRenderable::ObjectRenderable(const ObjectType& type) : Object(glm::vec3{ 0.f }, glm::vec3{ 0.f }), type(type) {
-    this->position.y = -1;
     this->isInitialized = true;
 }
 

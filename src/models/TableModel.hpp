@@ -16,6 +16,7 @@ public:
 			{ FileType::FRAGMENT_SHADER, "shaders/table.frag" }
 		};
 
+        this->position.y = -3.f;
 		this->vertices = {
 			// Frente
             { -width, -height, length },
@@ -118,7 +119,7 @@ public:
 			22, 23, 20
 		};
 
-        for (GLuint index : this->indices)
+        for (int index = 0; index < this->vertices.size(); index++)
             GenerateElements(this->elements, &this->vertices[index], nullptr, &this->normals[index]);
 	}
 };

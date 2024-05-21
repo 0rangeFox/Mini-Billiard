@@ -12,7 +12,7 @@
 #include "Shader.h"
 #include "ObjectType.h"
 
-class ObjectRenderable: Object {
+class ObjectRenderable: protected Object {
 public:
     ObjectRenderable(const ObjectType&);
     ObjectRenderable(const ObjectType&, const std::string&);
