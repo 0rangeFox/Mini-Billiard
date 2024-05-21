@@ -11,22 +11,23 @@
 #include "../utils/ShaderUtil.hpp"
 #include "../utils/TextureUtil.hpp"
 
-ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : Object(-1, 1) {
+ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : Object(-10, 10) {
     std::string _material{};
 
     this->position.y = 0;
 
     this->addResource(FileType::OBJECT, File(path));
     this->type = type;
-    this->isInitialized = LoadOBJ(path, _material, this->vertices, this->uvs, this->normals);
+    this->isInitialized = LoadOBJ(path, _material, this->vertices, this->uvs, this->normals, this->indices, this->elements);
 
-    if (!_material.empty()) {
-        this->addResource(FileType::MATERIAL, this->getResource<FileType::OBJECT>().copyPathToFile(_material));
-        this->material = LoadMaterial(this->getResource<FileType::MATERIAL>().getFullPath());
+    if (_material.empty())
+        return;
 
-        if (this->material)
-            this->addResource(FileType::IMAGE, this->material->image);
-    }
+    this->addResource(FileType::MATERIAL, this->getResource<FileType::OBJECT>().copyPathToFile(_material));
+    this->material = LoadMaterial(this->getResource<FileType::MATERIAL>().getFullPath());
+
+    if (this->material && this->material->image.isValid())
+        this->addResource(FileType::IMAGE, this->material->image);
 }
 
 ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path, const std::unordered_map<FileType, File>& extraFiles) : ObjectRenderable(type, path) {
@@ -35,44 +36,7 @@ ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& pa
 
 ObjectRenderable::~ObjectRenderable() {
     glDeleteProgram(this->shader);
-
     delete this->material;
-    delete[] this->indices;
-    delete[] this->elements;
-}
-
-bool ObjectRenderable::generateIndices() {
-    this->indices = new GLuint[this->vertices.size()];
-    for (int i = 0; i < this->vertices.size(); ++i)
-        this->indices[i] = i;
-    return true;
-}
-
-bool ObjectRenderable::generateElements() {
-    this->elements = new GLfloat[this->getTotalElements()];
-    GLuint counter = 0;
-
-    for (int i = 0; i < this->vertices.size(); i++) {
-        glm::vec3 vVertices = this->vertices[i];
-        glm::vec3 vNormals = this->normals[i];
-        glm::vec2 vUVs = this->uvs[i];
-
-        // X Y Z
-        this->elements[counter++] = vVertices.x;
-        this->elements[counter++] = vVertices.y;
-        this->elements[counter++] = vVertices.z;
-
-        // NX NY NZ
-        this->elements[counter++] = vNormals.x;
-        this->elements[counter++] = vNormals.y;
-        this->elements[counter++] = vNormals.z;
-
-        // U V
-        this->elements[counter++] = vUVs.x;
-        this->elements[counter++] = vUVs.y;
-    }
-
-    return counter == this->getTotalElements();
 }
 
 bool ObjectRenderable::generateShaders() {
@@ -90,41 +54,35 @@ bool ObjectRenderable::generateShaders() {
 }
 
 bool ObjectRenderable::generateTextures(ApplicationPtr app) {
-    this->texture = LoadTexture(this->material->name, this->material->image.getFullPath(), true, app->getTexturesCache());
-    this->texture = LoadTexture(this->material->name, this->material->image.getFullPath(), app->getTexturesCache());
-    return this->texture > 0;
+    return (this->texture = LoadTexture(this->material->name, this->material->image.getFullPath(), true, app->getTexturesCache())) > 0;
 }
 
 bool ObjectRenderable::assemble(ApplicationPtr app) {
     glBindVertexArray(app->getVAO(this->type));
 
-    if (!this->generateIndices() ||
-        !this->generateElements() ||
-        !this->generateShaders() ||
-        !this->generateTextures(app)
-    )
+    if (!this->generateShaders() || !this->generateTextures(app))
         return this->isInitialized = false;
 
     glBindBuffer(GL_ARRAY_BUFFER, app->getVBO(VBO_DATA));
-    glBufferStore(GL_ARRAY_BUFFER, this->elements, this->getTotalElements() * sizeof(GLfloat));
+    glBufferStore(GL_ARRAY_BUFFER, this->elements.data(), this->elements.size() * sizeof(GLfloat));
 
-    if (this->indices) {
+    if (!this->indices.empty()) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, app->getVBO(VBO_EBO));
-        glBufferStore(GL_ELEMENT_ARRAY_BUFFER, this->indices, this->vertices.size() * sizeof(GLuint))
+        glBufferStore(GL_ELEMENT_ARRAY_BUFFER, this->indices.data(), this->indices.size() * sizeof(GLuint))
     }
 
     GLint verticesId = glGetProgramResLoc(this->shader, "vVertices")
-    GLint normalsId = glGetProgramResLoc(this->shader, "vNormals")
     GLint uvsId = glGetProgramResLoc(this->shader, "vUVs")
+    GLint normalsId = glGetProgramResLoc(this->shader, "vNormals")
 
-    GLsizei stride = sizeof(GLfloat) * (3 + 3 + 2);
+    GLsizei stride = sizeof(GLfloat) * (3 + 2 + 3);
     glVertexAttribPointer(verticesId, 3, GL_FLOAT, GL_FALSE, stride, nullptr);
-    glVertexAttribPointer(normalsId, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (3 * sizeof(GLfloat)));
-    glVertexAttribPointer(uvsId, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (6 * sizeof(GLfloat)));
+    glVertexAttribPointer(uvsId, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (3 * sizeof(GLfloat)));
+    glVertexAttribPointer(normalsId, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (5 * sizeof(GLfloat)));
 
     glEnableVertexAttribArray(verticesId);
-    glEnableVertexAttribArray(normalsId);
     glEnableVertexAttribArray(uvsId);
+    glEnableVertexAttribArray(normalsId);
 
     GLint locationTexSampler = glGetUniformLocation(this->shader, "textureMapping");
     glProgramUniform1i(this->shader, locationTexSampler, 0);
@@ -144,5 +102,5 @@ void ObjectRenderable::render(ApplicationPtr app) const {
     glUseProgram(this->shader);
     glBindTexture(GL_TEXTURE_2D, this->texture);
     updateShaderUniformVariableMVP(this->shader, app->getCamera().translate(this->position, this->orientation));
-    glDrawElements(GL_TRIANGLES, this->vertices.size(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, nullptr);
 }

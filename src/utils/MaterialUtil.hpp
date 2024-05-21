@@ -37,7 +37,6 @@ static MaterialPtr LoadMaterial(const std::string& path) {
         return true;
     }))
         return nullptr;
-
     return material;
 }
 

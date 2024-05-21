@@ -24,8 +24,6 @@ public:
     bool addResource(FileType type, const File& file) { return this->files.insert(std::make_pair(type, file)).second; }
     bool removeResource(FileType type) { return this->files.erase(type) == 1; }
 
-    GLuint getTotalElements() const { return this->vertices.size() * 3 + this->normals.size() * 3 + this->uvs.size() * 2; }
-
     bool assemble(ApplicationPtr);
     void render(ApplicationPtr) const;
 
@@ -34,14 +32,12 @@ private:
     std::unordered_map<FileType, File> files{};
     ObjectType type;
     MaterialPtr material = nullptr;
-    GLuint* indices = nullptr;
-    GLfloat* elements = nullptr;
     GLuint shader, texture;
     std::vector<glm::vec3> vertices{}, normals{};
     std::vector<glm::vec2> uvs{};
+    std::vector<GLuint> indices{};
+    std::vector<GLfloat> elements{};
 
-    bool generateIndices();
-    bool generateElements();
     bool generateShaders();
     bool generateTextures(ApplicationPtr);
 };

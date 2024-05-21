@@ -19,7 +19,7 @@ public:
         size_t extPos = path.find_last_of(EXTENSION_DELIMITER),
                 namePos = path.find_last_of(DIRECTORY_DELIMITER) + 1;
 
-        this->extension = path.substr(extPos + 1);
+        this->extension = extPos != std::string::npos && namePos < extPos ? path.substr(extPos + 1) : "";
         this->fileName = path.substr(namePos, extPos - namePos);
         this->path = path.substr(0, namePos - 1);
     }
@@ -32,6 +32,18 @@ public:
     std::string getNameWithExtension() const { return this->fileName + '.' + this->getExtension(); }
     std::string getFullPath() const { return this->getPath() + this->getNameWithExtension(); }
 
+    bool isValid() {
+        bool isValid = false;
+
+        if (this->extension.empty())
+            return isValid;
+
+        std::ifstream file(this->getFullPath());
+        if ((isValid = file.is_open()))
+            file.close();
+
+        return isValid;
+    }
     File copyPathToFile(const std::string& file) const { return File{ this->getPath() + file }; }
 
     operator std::string() const { return this->getFullPath(); }

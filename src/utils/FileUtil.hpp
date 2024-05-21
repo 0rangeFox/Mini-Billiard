@@ -30,6 +30,13 @@ static std::vector<std::string> ReadFile(const std::string& path) {
     return lines;
 }
 
+static bool ReadFileStream(const std::string& path, const std::function<bool(std::istringstream)>& lineCallback) {
+    for (const std::string& line : ReadFile(path))
+        if (!lineCallback(std::istringstream(line)))
+            return false;
+    return true;
+}
+
 static bool ReadFile(const std::string& path, const std::function<bool(const std::string&)>& lineCallback) {
     auto lines = ReadFile(path);
     return std::all_of(lines.begin(), lines.end(), lineCallback);
