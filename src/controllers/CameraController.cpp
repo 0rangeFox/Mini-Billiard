@@ -52,7 +52,7 @@ float CameraController::setAngle(float angle) {
     // Rotations
     // https://www.songho.ca/opengl/files/gl_camera07.jpg
     // https://learnopengl.com/img/getting-started/camera_pitch_yaw_roll.png
-    this->model = glm::rotate(this->model, glm::radians(this->angle), glm::normalize(glm::vec3(0.f, 1.f, 0.f)));
+    this->model = glm::rotate(glm::mat4{ 1.f }, glm::radians(this->angle), glm::normalize(glm::vec3(0.f, 1.f, 0.f)));
 
     this->refresh();
     return oldAngle;
