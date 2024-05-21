@@ -4,9 +4,9 @@
 
 #include "CameraController.h"
 
-#include <iostream>
 #include "../app/Application.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "../utils/MathUtil.hpp"
 
 CameraController::CameraController(ApplicationPtr application) {
     this->application = application;
@@ -17,7 +17,7 @@ bool CameraController::initialize(const glm::vec3& position, float fov) {
     this->updateFOV(fov);
     this->position = position;
     this->target = glm::vec3(0.f);
-    this->refresh();
+    this->setAngle(0.f);
     return true;
 }
 
@@ -46,21 +46,21 @@ float CameraController::updateFOV(float fov) {
 
 float CameraController::setAngle(float angle) {
     float oldAngle = this->angle;
-    this->angle = angle;
+    this->angle = NormalizeAngle(angle);
 
     // Rotations
     // https://www.songho.ca/opengl/files/gl_camera07.jpg
     // https://learnopengl.com/img/getting-started/camera_pitch_yaw_roll.png
-    this->model = glm::rotate(this->model, this->angle, glm::normalize(glm::vec3(0.f, 1.f, 0.f)));
+    this->model = glm::rotate(this->model, glm::radians(this->angle), glm::normalize(glm::vec3(0.f, 1.f, 0.f)));
 
     this->refresh();
     return oldAngle;
 }
 
 float CameraController::updateAngle(float angle) {
-    float newAngle = this->angle + angle;
+    float newAngle = NormalizeAngle(this->angle + angle);
     this->setAngle(newAngle);
-    return angle;
+    return newAngle;
 }
 
 float CameraController::setZoom(float zoom) {

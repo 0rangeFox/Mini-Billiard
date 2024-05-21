@@ -50,7 +50,7 @@ Application::Application(const char* title, int width, int height) {
 
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, this->width, this->height);
-    this->isInitialized = this->camera.initialize(glm::vec3(.0f, 10.f, 20.f));
+    this->isInitialized = this->camera.initialize(glm::vec3(0.f, 10.f, 20.f));
 }
 
 Application::~Application() {
