@@ -54,7 +54,9 @@ bool ObjectRenderable::generateShaders() {
 }
 
 bool ObjectRenderable::generateTextures(ApplicationPtr app) {
-    return (this->texture = LoadTexture(this->material->name, this->material->image.getFullPath(), true, app->getTexturesCache())) > 0;
+    if (this->material)
+        return (this->texture = LoadTexture(this->material->name, this->material->image.getFullPath(), true, app->getTexturesCache())) > 0;
+    return true;
 }
 
 bool ObjectRenderable::assemble(ApplicationPtr app) {
@@ -100,7 +102,8 @@ void ObjectRenderable::render(ApplicationPtr app) const {
 
     glBindVertexArray(app->getVAO(this->type));
     glUseProgram(this->shader);
-    glBindTexture(GL_TEXTURE_2D, this->texture);
+    if (this->texture > 0)
+        glBindTexture(GL_TEXTURE_2D, this->texture);
     updateShaderUniformVariableMVP(this->shader, app->getCamera().translate(this->position, this->orientation));
     glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, nullptr);
 }

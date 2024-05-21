@@ -27,16 +27,21 @@ public:
     bool assemble(ApplicationPtr);
     void render(ApplicationPtr) const;
 
-private:
-    bool isInitialized;
+protected:
     std::unordered_map<FileType, File> files{};
+
     ObjectType type;
-    MaterialPtr material = nullptr;
-    GLuint shader, texture;
+
     std::vector<glm::vec3> vertices{}, normals{};
     std::vector<glm::vec2> uvs{};
     std::vector<GLuint> indices{};
     std::vector<GLfloat> elements{};
+
+private:
+    bool isInitialized;
+
+    MaterialPtr material = nullptr;
+    GLuint shader, texture;
 
     bool generateShaders();
     bool generateTextures(ApplicationPtr);
