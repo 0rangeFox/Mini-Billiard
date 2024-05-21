@@ -113,7 +113,9 @@ bool Application::setupVAOsAndVBOs() {
         return false;
 
     glGenVertexArrays(VAOs, this->VAO);
-    glGenBuffers(VBOs, this->VBO);
+
+    for (auto& vbo : this->VBO)
+        glGenBuffers(VBOs, vbo);
 
     return true;
 }

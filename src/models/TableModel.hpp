@@ -18,78 +18,78 @@ public:
 
 		this->vertices = {
 			// Frente
-			glm::vec3(-width, -height, length),
-			glm::vec3(width, -height, length),
-			glm::vec3(width, height, length),
-			glm::vec3(-width, height, length),
+            { -width, -height, length },
+            { width, -height, length },
+            { width, height, length },
+            { -width, height, length },
 
 			// Trás
-			glm::vec3(-width, -height, -length),
-			glm::vec3(-width, height, -length),
-			glm::vec3(width, height, -length),
-			glm::vec3(width, -height, -length),
+            { -width, -height, -length },
+            { -width, height, -length },
+            { width, height, -length },
+            { width, -height, -length },
 
 			// Lado Esquerdo
-			glm::vec3(-width, -height, length),
-			glm::vec3(-width, height, length),
-			glm::vec3(-width, height, -length),
-			glm::vec3(-width, -height, -length),
+            { -width, -height, length },
+            { -width, height, length },
+            { -width, height, -length },
+            { -width, -height, -length },
 
 			// Lado Direito
-			glm::vec3(width, -height, length),
-			glm::vec3(width, -height, -length),
-			glm::vec3(width, height, -length),
-			glm::vec3(width, height, length),
+            { width, -height, length },
+            { width, -height, -length },
+            { width, height, -length },
+            { width, height, length },
 
 			// Lado de cima
-			glm::vec3(-width, height, length),
-			glm::vec3(width, height, length),
-			glm::vec3(width, height, -length),
-			glm::vec3(-width, height, -length),
+            { -width, height, length },
+            { width, height, length },
+            { width, height, -length },
+            { -width, height, -length },
 
 			// Lado de baixo
-			glm::vec3(-width, -height, length),
-			glm::vec3(-width, -height, -length),
-			glm::vec3(width, -height, -length),
-			glm::vec3(width, -height, length)
+            { -width, -height, length },
+            { -width, -height, -length },
+            { width, -height, -length },
+            { width, -height, length }
 		};
 
 		this->normals = {
 			// Frente
-			glm::vec3(0.0f, 0.0f, 1.0f),
-			glm::vec3(0.0f, 0.0f, 1.0f),
-			glm::vec3(0.0f, 0.0f, 1.0f),
-			glm::vec3(0.0f, 0.0f, 1.0f),
+            { 0.f, 0.f, 1.f },
+            { 0.f, 0.f, 1.f },
+            { 0.f, 0.f, 1.f },
+            { 0.f, 0.f, 1.f },
 
 			// Trás
-			glm::vec3(0.0f, 0.0f, -1.0f),
-			glm::vec3(0.0f, 0.0f, -1.0f),
-			glm::vec3(0.0f, 0.0f, -1.0f),
-			glm::vec3(0.0f, 0.0f, -1.0f),
+            { 0.f, 0.f, -1.f },
+            { 0.f, 0.f, -1.f },
+            { 0.f, 0.f, -1.f },
+            { 0.f, 0.f, -1.f },
 
 			// Lado Esquerdo
-			glm::vec3(1.0f, 0.0f, 0.0f),
-			glm::vec3(1.0f, 0.0f, 0.0f),
-			glm::vec3(1.0f, 0.0f, 0.0f),
-			glm::vec3(1.0f, 0.0f, 0.0f),
+            { 1.f, 0.f, 0.f },
+            { 1.f, 0.f, 0.f },
+            { 1.f, 0.f, 0.f },
+            { 1.f, 0.f, 0.f },
 
 			// Lado Direito
-			glm::vec3(-1.0f, 0.0f, 0.0f),
-			glm::vec3(-1.0f, 0.0f, 0.0f),
-			glm::vec3(-1.0f, 0.0f, 0.0f),
-			glm::vec3(-1.0f, 0.0f, 0.0f),
+            { -1.f, 0.f, 0.f },
+            { -1.f, 0.f, 0.f },
+            { -1.f, 0.f, 0.f },
+            { -1.f, 0.f, 0.f },
 
 			// Lado de cima
-			glm::vec3(0.0f, 1.0f, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f),
+            { 0.f, 1.f, 0.f },
+            { 0.f, 1.f, 0.f },
+            { 0.f, 1.f, 0.f },
+            { 0.f, 1.f, 0.f },
 
 			// Lado de baixo
-			glm::vec3(0.0f, -1.0f, 0.0f),
-			glm::vec3(0.0f, -1.0f, 0.0f),
-			glm::vec3(0.0f, -1.0f, 0.0f),
-			glm::vec3(0.0f, -1.0f, 0.0f)
+            { 0.f, -1.f, 0.f },
+            { 0.f, -1.f, 0.f },
+            { 0.f, -1.f, 0.f },
+            { 0.f, -1.f, 0.f }
 		};
 
         this->indices = {
@@ -118,10 +118,8 @@ public:
 			22, 23, 20
 		};
 
-        #define VERTICES 3
-        for (int face = 0; face < this->indices.size(); face += VERTICES)
-            for (int vertex = face; vertex < VERTICES; vertex++)
-                GenerateElements(this->elements, &this->vertices[vertex], nullptr, &this->normals[vertex]);
+        for (GLuint index : this->indices)
+            GenerateElements(this->elements, &this->vertices[index], nullptr, &this->normals[index]);
 	}
 };
 

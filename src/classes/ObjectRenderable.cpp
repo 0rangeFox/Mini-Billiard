@@ -11,22 +11,23 @@
 #include "../utils/ShaderUtil.hpp"
 #include "../utils/TextureUtil.hpp"
 
-ObjectRenderable::ObjectRenderable(const ObjectType& type) : type(type) {
+ObjectRenderable::ObjectRenderable(const ObjectType& type) : Object(glm::vec3{ 0.f }, glm::vec3{ 0.f }), type(type) {
+    this->position.y = -1;
     this->isInitialized = true;
 }
 
-ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : type(type), Object(-10, 10) {
-    std::string _material{};
+ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : Object(-10, 10), type(type) {
+    std::string materialFileName{};
 
     this->position.y = 0;
 
     this->addResource(FileType::OBJECT, File(path));
-    this->isInitialized = LoadOBJ(path, _material, this->vertices, this->uvs, this->normals, this->indices, this->elements);
+    this->isInitialized = LoadOBJ(path, materialFileName, this->vertices, this->uvs, this->normals, this->indices, this->elements);
 
-    if (_material.empty())
+    if (materialFileName.empty())
         return;
 
-    this->addResource(FileType::MATERIAL, this->getResource<FileType::OBJECT>().copyPathToFile(_material));
+    this->addResource(FileType::MATERIAL, this->getResource<FileType::OBJECT>().copyPathToFile(materialFileName));
     this->material = LoadMaterial(this->getResource<FileType::MATERIAL>().getFullPath());
 
     if (this->material && this->material->image.isValid())
@@ -68,15 +69,15 @@ bool ObjectRenderable::assemble(ApplicationPtr app) {
     if (!this->generateShaders() || !this->generateTextures(app))
         return this->isInitialized = false;
 
-    glBindBuffer(GL_ARRAY_BUFFER, app->getVBO(VBO_DATA));
+    glBindBuffer(GL_ARRAY_BUFFER, app->getVBO(this->type, VBO_DATA));
     glBufferData(GL_ARRAY_BUFFER, this->elements.size() * sizeof(GLfloat), this->elements.data(), GL_STATIC_DRAW);
 
     if (!this->indices.empty()) {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, app->getVBO(VBO_EBO));
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, app->getVBO(this->type, VBO_EBO));
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(GLuint), this->indices.data(), GL_STATIC_DRAW);
     }
 
-    GLsizei stride = sizeof(GLfloat) * (3 + 2 + 3);
+    GLsizei stride = (3 + 2 + 3) * sizeof(GLfloat);
     GLint verticesId = glGetProgramResLoc(this->shader, "vVertices");
     GLint uvsId = glGetProgramResLoc(this->shader, "vUVs");
     GLint normalsId = glGetProgramResLoc(this->shader, "vNormals");

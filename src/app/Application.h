@@ -45,8 +45,8 @@ public:
     bool isMouseLeftButtonDown() const { return this->mouseLeftButtonDownStatus; }
     void setMouseLeftButtonDown(bool status) { this->mouseLeftButtonDownStatus = status; }
 
-    const GLuint getVAO(ObjectType type) const { return this->VAO[type]; }
-    const GLuint getVBO(GLuint type) const { return this->VBO[type]; }
+    const GLuint& getVAO(ObjectType type) const { return this->VAO[type]; }
+    const GLuint& getVBO(ObjectType type, GLuint index) const { return this->VBO[type][index]; }
 
     bool addObject(ObjectRenderable*);
 
@@ -67,7 +67,7 @@ private:
     CameraController camera{ this };
 
     GLuint VAO[VAOs]{};
-    GLuint VBO[VBOs]{};
+    GLuint VBO[VAOs][VBOs]{};
     TexturesCache textures;
     std::vector<const ObjectRenderable*> objects;
 
