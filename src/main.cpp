@@ -1,5 +1,6 @@
 #include "app/Application.h"
 #include "classes/ObjectRenderable.h"
+#include "models/TableModel.hpp"
 
 int main() {
     const std::unordered_map<FileType, File> shaderFiles {
@@ -8,9 +9,9 @@ int main() {
     };
 
     Application app { TITLE, WIDTH, HEIGHT };
-
-    for (int i = 1; i <= TOTAL_BALLS; ++i)
-        app.addObject(new ObjectRenderable(ObjectType::BALL, "./PoolBalls/Ball" + std::to_string(i) + ".obj", shaderFiles));
+    app.addObject(new TableModel());
+    /*for (int i = 1; i <= TOTAL_BALLS; ++i)
+        app.addObject(new ObjectRenderable(ObjectType::BALL, "./PoolBalls/Ball" + std::to_string(i) + ".obj", shaderFiles));*/
 
     return app.run();
 }

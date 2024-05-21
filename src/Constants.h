@@ -8,7 +8,7 @@
 #define TITLE "Billiard Table"
 #define WIDTH 800
 #define HEIGHT 600
-#define MOUSE_SENSITIVITY .005f
+#define MOUSE_SENSITIVITY .05f
 
 #define TOTAL_BALLS 15
 

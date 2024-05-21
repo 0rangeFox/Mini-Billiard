@@ -14,6 +14,23 @@
 #define HEADER_NORMAL "vn"
 #define HEADER_FACE "f"
 
+static void GenerateElements(std::vector<GLfloat>& elements, const glm::vec3& vVertices, const glm::vec2& vUVs, const glm::vec3& vNormals) {
+    // X Y Z
+    elements.push_back(vVertices.x);
+    elements.push_back(vVertices.y);
+    elements.push_back(vVertices.z);
+
+    // U V
+    elements.push_back(vUVs.x);
+    elements.push_back(vUVs.y);
+
+    // NX NY NZ
+    elements.push_back(vNormals.x);
+    elements.push_back(vNormals.y);
+    elements.push_back(vNormals.z);
+
+}
+
 static bool LoadOBJ(const std::string& path, std::string& material, std::vector<glm::vec3>& vertices, std::vector<glm::vec2>& uvs, std::vector<glm::vec3>& normals, std::vector<GLuint>& indices, std::vector<GLfloat>& elements) {
     if (!ReadFileStream(path, [&material, &vertices, &uvs, &normals, &indices, &elements](std::istringstream line) {
         std::string header;
@@ -40,26 +57,8 @@ static bool LoadOBJ(const std::string& path, std::string& material, std::vector<
 
             for (int i = 0; i < VERTICES; ++i) {
                 line >> vertexIndex >> skipChar >> uvIndex >> skipChar >> normalIndex;
-
-                glm::vec3 vVertices = vertices[vertexIndex - 1];
-                glm::vec2 vUVs = uvs[uvIndex - 1];
-                glm::vec3 vNormals = normals[normalIndex - 1];
-
                 indices.push_back(indices.size());
-
-                // X Y Z
-                elements.push_back(vVertices.x);
-                elements.push_back(vVertices.y);
-                elements.push_back(vVertices.z);
-
-                // U V
-                elements.push_back(vUVs.x);
-                elements.push_back(vUVs.y);
-
-                // NX NY NZ
-                elements.push_back(vNormals.x);
-                elements.push_back(vNormals.y);
-                elements.push_back(vNormals.z);
+                GenerateElements(elements, vertices[vertexIndex - 1], uvs[uvIndex - 1], normals[normalIndex - 1]);
             }
         }
 

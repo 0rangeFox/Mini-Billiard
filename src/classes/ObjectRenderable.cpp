@@ -11,6 +11,11 @@
 #include "../utils/ShaderUtil.hpp"
 #include "../utils/TextureUtil.hpp"
 
+ObjectRenderable::ObjectRenderable(const ObjectType& type) : type(type) {
+    this->type = type;
+    this->isInitialized = true;
+}
+
 ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : Object(-10, 10) {
     std::string _material{};
 
@@ -66,25 +71,25 @@ bool ObjectRenderable::assemble(ApplicationPtr app) {
         return this->isInitialized = false;
 
     glBindBuffer(GL_ARRAY_BUFFER, app->getVBO(VBO_DATA));
-    glBufferStore(GL_ARRAY_BUFFER, this->elements.data(), this->elements.size() * sizeof(GLfloat));
+    glBufferData(GL_ARRAY_BUFFER, this->elements.size() * sizeof(GLfloat), this->elements.data(), GL_STATIC_DRAW);
 
     if (!this->indices.empty()) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, app->getVBO(VBO_EBO));
-        glBufferStore(GL_ELEMENT_ARRAY_BUFFER, this->indices.data(), this->indices.size() * sizeof(GLuint))
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(GLuint), this->indices.data(), GL_STATIC_DRAW);
     }
 
     GLint verticesId = glGetProgramResLoc(this->shader, "vVertices")
-    GLint uvsId = glGetProgramResLoc(this->shader, "vUVs")
-    GLint normalsId = glGetProgramResLoc(this->shader, "vNormals")
+    /*GLint uvsId = glGetProgramResLoc(this->shader, "vUVs")*/
+    /*GLint normalsId = glGetProgramResLoc(this->shader, "vNormals")*/
 
     GLsizei stride = sizeof(GLfloat) * (3 + 2 + 3);
     glVertexAttribPointer(verticesId, 3, GL_FLOAT, GL_FALSE, stride, nullptr);
-    glVertexAttribPointer(uvsId, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (3 * sizeof(GLfloat)));
-    glVertexAttribPointer(normalsId, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (5 * sizeof(GLfloat)));
+    /*glVertexAttribPointer(uvsId, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (3 * sizeof(GLfloat)));*/
+   /* glVertexAttribPointer(normalsId, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (5 * sizeof(GLfloat)));*/
 
     glEnableVertexAttribArray(verticesId);
-    glEnableVertexAttribArray(uvsId);
-    glEnableVertexAttribArray(normalsId);
+ /*   glEnableVertexAttribArray(uvsId);*/
+    /*glEnableVertexAttribArray(normalsId);*/
 
     GLint locationTexSampler = glGetUniformLocation(this->shader, "textureMapping");
     glProgramUniform1i(this->shader, locationTexSampler, 0);

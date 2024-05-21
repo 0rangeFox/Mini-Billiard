@@ -14,6 +14,7 @@
 
 class ObjectRenderable: Object {
 public:
+    ObjectRenderable(const ObjectType&);
     ObjectRenderable(const ObjectType&, const std::string&);
     ObjectRenderable(const ObjectType&, const std::string&, const std::unordered_map<FileType, File>&);
     ~ObjectRenderable();
