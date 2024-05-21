@@ -12,17 +12,15 @@
 #include "../utils/TextureUtil.hpp"
 
 ObjectRenderable::ObjectRenderable(const ObjectType& type) : type(type) {
-    this->type = type;
     this->isInitialized = true;
 }
 
-ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : Object(-10, 10) {
+ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : type(type), Object(-10, 10) {
     std::string _material{};
 
     this->position.y = 0;
 
     this->addResource(FileType::OBJECT, File(path));
-    this->type = type;
     this->isInitialized = LoadOBJ(path, _material, this->vertices, this->uvs, this->normals, this->indices, this->elements);
 
     if (_material.empty())

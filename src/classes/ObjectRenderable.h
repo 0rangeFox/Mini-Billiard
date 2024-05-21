@@ -42,7 +42,7 @@ private:
     bool isInitialized;
 
     MaterialPtr material = nullptr;
-    GLuint shader, texture;
+    GLuint shader = 0, texture = 0;
 
     bool generateShaders();
     bool generateTextures(ApplicationPtr);
