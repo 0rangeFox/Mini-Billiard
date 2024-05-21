@@ -67,8 +67,20 @@ Application::~Application() {
     delete this->textures;
 }
 
+// Unbind the actual VAO, VBO, EBO, Texture and Shaders
+void unbindBuffers() {
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glUseProgram(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 bool Application::addObject(ObjectRenderable* obj) {
     bool isAssembledSuccessfully = obj->assemble(this);
+
+    unbindBuffers();
+
     if (isAssembledSuccessfully)
         this->objects.push_back(obj);
     return isAssembledSuccessfully;
@@ -115,13 +127,14 @@ int Application::run() {
     glfwSetCursorPosCallback(this->actualWindow, MouseMoveCallback);
     glfwSetScrollCallback(this->actualWindow, MouseScrollCallback);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(.1f, .1f, .1f, 1.f);
 
     while (!glfwWindowShouldClose(this->actualWindow)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (const ObjectRenderable* obj : this->objects)
             obj->render(this);
+        unbindBuffers();
 
         glfwSwapBuffers(this->actualWindow);
         glfwPollEvents();

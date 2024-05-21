@@ -95,14 +95,6 @@ bool ObjectRenderable::generateTextures(ApplicationPtr app) {
     return this->texture > 0;
 }
 
-// Unbind the actual VAO and Texture
-void unbindTexturesAndVAO() {
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-
 bool ObjectRenderable::assemble(ApplicationPtr app) {
     glBindVertexArray(app->getVAO(this->type));
 
@@ -110,10 +102,8 @@ bool ObjectRenderable::assemble(ApplicationPtr app) {
         !this->generateElements() ||
         !this->generateShaders() ||
         !this->generateTextures(app)
-    ) {
-        unbindTexturesAndVAO();
+    )
         return this->isInitialized = false;
-    }
 
     glBindBuffer(GL_ARRAY_BUFFER, app->getVBO(VBO_DATA));
     glBufferStore(GL_ARRAY_BUFFER, this->elements, this->getTotalElements() * sizeof(GLfloat));
@@ -139,7 +129,6 @@ bool ObjectRenderable::assemble(ApplicationPtr app) {
     GLint locationTexSampler = glGetUniformLocation(this->shader, "textureMapping");
     glProgramUniform1i(this->shader, locationTexSampler, 0);
 
-    unbindTexturesAndVAO();
     return CheckErrorAndLog("Couldn't assemble the object \"" + this->material->name + "\".");
 }
 
@@ -152,6 +141,7 @@ void ObjectRenderable::render(ApplicationPtr app) const {
     if (!this->isInitialized || !this->shader) return;
 
     glBindVertexArray(app->getVAO(this->type));
+    glUseProgram(this->shader);
     glBindTexture(GL_TEXTURE_2D, this->texture);
     updateShaderUniformVariableMVP(this->shader, app->getCamera().translate(this->position, this->orientation));
     glDrawElements(GL_TRIANGLES, this->vertices.size(), GL_UNSIGNED_INT, nullptr);
