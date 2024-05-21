@@ -24,6 +24,7 @@ bool CameraController::initialize(const glm::vec3& position, float fov) {
 glm::mat4 CameraController::translate(const glm::vec3& position, const glm::vec3& orientation) const {
     glm::mat4 modelTranslated = glm::translate(this->model, position);
 
+    //                                                                                 Pitch | Yaw | Roll
     modelTranslated = glm::rotate(modelTranslated, glm::radians(orientation.x), glm::vec3(1.f, 0.f, 0.f));
     modelTranslated = glm::rotate(modelTranslated, glm::radians(orientation.y), glm::vec3(0.f, 1.f, 0.f));
     modelTranslated = glm::rotate(modelTranslated, glm::radians(orientation.z), glm::vec3(0.f, 0.f, 1.f));

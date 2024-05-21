@@ -9,20 +9,16 @@
 
 static void MouseMoveCallback(GLFWwindow* window, double posX, double posY) {
     auto app = (Application*) glfwGetWindowUserPointer(window);
-    auto mouseCoords = app->updateMouseCoords(posX, posY);
+    MouseCoords mouseCoords = app->updateMouseCoords(posX, posY);
 
     if (app->isMouseLeftButtonDown()) {
-        auto mouseX = std::get<0>(mouseCoords);
-        auto mouseY = std::get<1>(mouseCoords);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-        int dx = std::get<1>(mouseX) - std::get<0>(mouseX);
-        int dy = std::get<1>(mouseY) - std::get<0>(mouseY);
-
-        if (dx < 0) // Rotating to left side
-            app->getCameraPtr()->updateAngle(0.01f);
-        else if (dx > 0) // Rotating to right side
-            app->getCameraPtr()->updateAngle(-0.01f);
-    }
+        MouseCoord mouseX = std::get<0>(mouseCoords);
+        double deltaX = std::get<1>(mouseX) - std::get<0>(mouseX);
+        app->getCameraPtr()->updateAngle(deltaX * MOUSE_SENSITIVITY);
+    } else
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 #endif //MINI_BILLIARD_MOUSEMOVECALLBACK_HPP
