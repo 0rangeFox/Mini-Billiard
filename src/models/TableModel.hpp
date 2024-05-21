@@ -1,66 +1,57 @@
 ﻿//
-// Created by João Fernandes on 14/05/2024.
+// Created by Tiago Mendes on 21/05/2024.
 //
 
-#ifndef MINI_BILLIARD_TABLE_HPP
-#define MINI_BILLIARD_TABLE_HPP
+#ifndef MINI_BILLIARD_TABLEMODEL_HPP
+#define MINI_BILLIARD_TABLEMODEL_HPP
 
 #include "../classes/ObjectRenderable.h"
 #include "../utils/ObjectUtil.hpp"
 
-class TableModel : public ObjectRenderable {
+class TableModel: public ObjectRenderable {
 public:
-	TableModel(): ObjectRenderable(ObjectType::TABLE) {
-
-		this->files = std::unordered_map<FileType, File>{
+	TableModel(float width = 12.5f, float height = 1.5f, float length = 22.5f): ObjectRenderable(ObjectType::TABLE) {
+		this->files = {
 			{ FileType::VERTEX_SHADER, "shaders/table.vert" },
 			{ FileType::FRAGMENT_SHADER, "shaders/table.frag" }
 		};
 
-		float tH = 3.0f;    // Valores posteriormente divididos por 2,
-		float tW = 25.0f;        // sendo que os v�rtice mais longe um do outro s�o esse valor 
-		float tL = 35.0f;
-		float poolW = tW / 2;
-		float poolH = tH / 2;
-		float poolL = tL / 2;
-
-
 		this->vertices = {
 			// Frente
-			glm::vec3(-poolW, -poolH, poolL),
-			glm::vec3(poolW, -poolH, poolL),
-			glm::vec3(poolW, poolH, poolL),
-			glm::vec3(-poolW, poolH, poolL),
+			glm::vec3(-width, -height, length),
+			glm::vec3(width, -height, length),
+			glm::vec3(width, height, length),
+			glm::vec3(-width, height, length),
 
 			// Trás
-			glm::vec3(-poolW, -poolH, -poolL),
-			glm::vec3(-poolW, poolH, -poolL),
-			glm::vec3(poolW, poolH, -poolL),
-			glm::vec3(poolW, -poolH, -poolL),
+			glm::vec3(-width, -height, -length),
+			glm::vec3(-width, height, -length),
+			glm::vec3(width, height, -length),
+			glm::vec3(width, -height, -length),
 
 			// Lado Esquerdo
-			glm::vec3(-poolW, -poolH, poolL),
-			glm::vec3(-poolW, poolH, poolL),
-			glm::vec3(-poolW, poolH, -poolL),
-			glm::vec3(-poolW, -poolH, -poolL),
+			glm::vec3(-width, -height, length),
+			glm::vec3(-width, height, length),
+			glm::vec3(-width, height, -length),
+			glm::vec3(-width, -height, -length),
 
 			// Lado Direito
-			glm::vec3(poolW, -poolH, poolL),
-			glm::vec3(poolW, -poolH, -poolL),
-			glm::vec3(poolW, poolH, -poolL),
-			glm::vec3(poolW, poolH, poolL),
+			glm::vec3(width, -height, length),
+			glm::vec3(width, -height, -length),
+			glm::vec3(width, height, -length),
+			glm::vec3(width, height, length),
 
 			// Lado de cima
-			glm::vec3(-poolW, poolH, poolL),
-			glm::vec3(poolW, poolH, poolL),
-			glm::vec3(poolW, poolH, -poolL),
-			glm::vec3(-poolW, poolH, -poolL),
+			glm::vec3(-width, height, length),
+			glm::vec3(width, height, length),
+			glm::vec3(width, height, -length),
+			glm::vec3(-width, height, -length),
 
-			// Lado de baixo 
-			glm::vec3(-poolW, -poolH, poolL),
-			glm::vec3(-poolW, -poolH, -poolL),
-			glm::vec3(poolW, -poolH, -poolL),
-			glm::vec3(poolW, -poolH, poolL)
+			// Lado de baixo
+			glm::vec3(-width, -height, length),
+			glm::vec3(-width, -height, -length),
+			glm::vec3(width, -height, -length),
+			glm::vec3(width, -height, length)
 		};
 
 		this->normals = {
@@ -94,14 +85,14 @@ public:
 			glm::vec3(0.0f, 1.0f, 0.0f),
 			glm::vec3(0.0f, 1.0f, 0.0f),
 
-			// Lado de baixo 
+			// Lado de baixo
 			glm::vec3(0.0f, -1.0f, 0.0f),
 			glm::vec3(0.0f, -1.0f, 0.0f),
 			glm::vec3(0.0f, -1.0f, 0.0f),
 			glm::vec3(0.0f, -1.0f, 0.0f)
 		};
 
-			this->indices = {
+        this->indices = {
 			// Face frontal
 			0, 1, 2,
 			2, 3, 0,
@@ -126,12 +117,12 @@ public:
 			20, 21, 22,
 			22, 23, 20
 		};
-			
-		/*for (auto face : this->indices) 
-			for (int i = face; i < 3; ++i) 
-				GenerateElements(this->elements, this->vertices[i], this->uvs[i], this->normals[i]);*/
+
+        #define VERTICES 3
+        for (int face = 0; face < this->indices.size(); face += VERTICES)
+            for (int vertex = face; vertex < VERTICES; vertex++)
+                GenerateElements(this->elements, &this->vertices[vertex], nullptr, &this->normals[vertex]);
 	}
 };
 
-
-#endif //MINI_BILLIARD_TABLE_HPP
+#endif //MINI_BILLIARD_TABLEMODEL_HPP

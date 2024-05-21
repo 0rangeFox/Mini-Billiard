@@ -78,23 +78,31 @@ bool ObjectRenderable::assemble(ApplicationPtr app) {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(GLuint), this->indices.data(), GL_STATIC_DRAW);
     }
 
-    GLint verticesId = glGetProgramResLoc(this->shader, "vVertices")
-    /*GLint uvsId = glGetProgramResLoc(this->shader, "vUVs")*/
-    /*GLint normalsId = glGetProgramResLoc(this->shader, "vNormals")*/
-
     GLsizei stride = sizeof(GLfloat) * (3 + 2 + 3);
+    GLint verticesId = glGetProgramResLoc(this->shader, "vVertices");
+    GLint uvsId = glGetProgramResLoc(this->shader, "vUVs");
+    GLint normalsId = glGetProgramResLoc(this->shader, "vNormals");
+    GLint texMapId = glGetUniformLocation(this->shader, "textureMapping");
+
     glVertexAttribPointer(verticesId, 3, GL_FLOAT, GL_FALSE, stride, nullptr);
-    /*glVertexAttribPointer(uvsId, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (3 * sizeof(GLfloat)));*/
-   /* glVertexAttribPointer(normalsId, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (5 * sizeof(GLfloat)));*/
-
     glEnableVertexAttribArray(verticesId);
- /*   glEnableVertexAttribArray(uvsId);*/
-    /*glEnableVertexAttribArray(normalsId);*/
 
-    GLint locationTexSampler = glGetUniformLocation(this->shader, "textureMapping");
-    glProgramUniform1i(this->shader, locationTexSampler, 0);
+    if (uvsId >= 0) {
+        glVertexAttribPointer(uvsId, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(uvsId);
+    }
 
-    return CheckErrorAndLog("Couldn't assemble the object \"" + this->material->name + "\".");
+    if (normalsId >= 0) {
+        glVertexAttribPointer(normalsId, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*) (5 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(normalsId);
+    }
+
+    if (texMapId >= 0)
+        glProgramUniform1i(this->shader, texMapId, 0);
+
+    if (this->material)
+        return CheckErrorAndLog("Couldn't assemble the object \"" + this->material->name + "\".");
+    return CheckErrorAndLog("Couldn't assemble the object with type " + std::to_string(this->type) + ".");
 }
 
 static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp) {

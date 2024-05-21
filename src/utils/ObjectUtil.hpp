@@ -14,21 +14,37 @@
 #define HEADER_NORMAL "vn"
 #define HEADER_FACE "f"
 
-static void GenerateElements(std::vector<GLfloat>& elements, const glm::vec3& vVertices, const glm::vec2& vUVs, const glm::vec3& vNormals) {
+static void GenerateElements(std::vector<GLfloat>& elements, const glm::vec3* vertices, const glm::vec2* uvs, const glm::vec3* normals) {
     // X Y Z
-    elements.push_back(vVertices.x);
-    elements.push_back(vVertices.y);
-    elements.push_back(vVertices.z);
+    if (vertices) {
+        elements.push_back(vertices->x);
+        elements.push_back(vertices->y);
+        elements.push_back(vertices->z);
+    } else {
+        elements.push_back(0);
+        elements.push_back(0);
+        elements.push_back(0);
+    }
 
     // U V
-    elements.push_back(vUVs.x);
-    elements.push_back(vUVs.y);
+    if (uvs) {
+        elements.push_back(uvs->x);
+        elements.push_back(uvs->y);
+    } else {
+        elements.push_back(0.f);
+        elements.push_back(0.f);
+    }
 
     // NX NY NZ
-    elements.push_back(vNormals.x);
-    elements.push_back(vNormals.y);
-    elements.push_back(vNormals.z);
-
+    if (normals) {
+        elements.push_back(normals->x);
+        elements.push_back(normals->y);
+        elements.push_back(normals->z);
+    } else {
+        elements.push_back(0);
+        elements.push_back(0);
+        elements.push_back(0);
+    }
 }
 
 static bool LoadOBJ(const std::string& path, std::string& material, std::vector<glm::vec3>& vertices, std::vector<glm::vec2>& uvs, std::vector<glm::vec3>& normals, std::vector<GLuint>& indices, std::vector<GLfloat>& elements) {
@@ -58,7 +74,7 @@ static bool LoadOBJ(const std::string& path, std::string& material, std::vector<
             for (int i = 0; i < VERTICES; ++i) {
                 line >> vertexIndex >> skipChar >> uvIndex >> skipChar >> normalIndex;
                 indices.push_back(indices.size());
-                GenerateElements(elements, vertices[vertexIndex - 1], uvs[uvIndex - 1], normals[normalIndex - 1]);
+                GenerateElements(elements, &vertices[--vertexIndex], &uvs[--uvIndex], &normals[--normalIndex]);
             }
         }
 
