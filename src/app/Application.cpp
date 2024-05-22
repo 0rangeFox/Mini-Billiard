@@ -132,29 +132,28 @@ bool Application::setupVAOsAndVBOs() {
     return true;
 }
 
-void Application::animateRandomBall(int ball)
-{   
-    
-    if (shouldAnimate) {
-        
-        auto* ballObj = (ObjectRenderable*)this->objects.at(ball);
-        glm::vec3 oldPosition = ballObj->getPosition();
-        oldPosition.x += 0.01f;
-        oldPosition.z -= 1.f;
-        ballObj->updatePosition(oldPosition);
-        for (auto object : this->objects) {
-            if (ballObj != object) {
-                if (ballObj->collideWith(*object) || oldPosition.x + 1 >= TABLE_WIDTH || oldPosition.x - 1 <= -TABLE_WIDTH ||
-                    oldPosition.z + 1 >= TABLE_LENGTH || oldPosition.z - 1 <= -TABLE_LENGTH) {
-                    shouldAnimate = false;
-                    break;
+void Application::renderAnimations() {
+    if (!this->ballIdToAnimate) return;
 
-                }
-            }
-        }
+    auto* ballObj = (ObjectRenderable*) this->objects.at(this->ballIdToAnimate);
 
+    glm::vec3 oldPosition = ballObj->getPosition();
+    oldPosition.x += 0.01f;
+    oldPosition.z -= 1.f;
+
+    if (oldPosition.x + 1 >= TABLE_WIDTH || oldPosition.x - 1 <= -TABLE_WIDTH ||
+        oldPosition.z + 1 >= TABLE_LENGTH || oldPosition.z - 1 <= -TABLE_LENGTH) {
+        this->ballIdToAnimate = false;
+        return;
     }
 
+    ballObj->updatePosition(oldPosition);
+
+    for (auto object : this->objects) {
+        if (object->getType() == ObjectType::TABLE || !ballObj->collideWith(*object)) continue;
+        this->ballIdToAnimate = false;
+        break;
+    }
 }
 
 int Application::run() {
@@ -170,17 +169,19 @@ int Application::run() {
     glfwSetScrollCallback(this->actualWindow, MouseScrollCallback);
 
     glClearColor(.1f, .1f, .1f, 1.f);
-    int ball = Random(1, this->objects.size() - 1);
+
     while (!glfwWindowShouldClose(this->actualWindow)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (const ObjectRenderable* obj : this->objects)
             obj->render(this);
         unbindBuffers();
-        animateRandomBall(ball);
+
+        this->renderAnimations();
+
         glfwSwapBuffers(this->actualWindow);
         glfwPollEvents();
-        
+
     }
 
     return EXIT_SUCCESS;

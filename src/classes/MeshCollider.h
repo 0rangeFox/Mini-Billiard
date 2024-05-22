@@ -16,9 +16,13 @@ public:
     explicit MeshCollider(const glm::vec3& position, const glm::vec3& orientation, float radius) : MeshCollider(MeshType::SPHERE, position, orientation, radius) {}
     MeshCollider(float radius = DEFAULT_VALUE, float min = 0, float max = 0) : MeshCollider(RandomVec3(min, max), RandomVec3(0, 0), radius) {}
 
+    const MeshType& getMeshType() const { return this->type; }
+
     // https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection#sphere_vs._sphere
     bool collideWith(const MeshCollider& other) const {
-        if (this->type == MeshType::SPHERE && other.type == MeshType::SPHERE)
+        if (this == &other) {
+            return false;
+        } else if (this->type == MeshType::SPHERE && other.type == MeshType::SPHERE)
             return glm::distance(this->position, other.position) <= this->radius + other.radius;
         else if (this->type == MeshType::SPHERE && other.type == MeshType::CUBE) {
             auto closestPoint = glm::clamp(this->position, other.position - other.min, other.position + other.max);

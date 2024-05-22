@@ -50,9 +50,14 @@ public:
     CameraController* const getCameraPtr() { return &this->camera; }
     const TexturesCache getTexturesCache() const { return this->textures; }
 
-    bool shouldAnimate = false;
-    void animateRandomBall(int ball);
-    
+    bool animateBall(GLuint ball) {
+        if (this->ballIdToAnimate)
+            return false;
+
+        this->ballIdToAnimate = ball;
+        return true;
+    }
+
     int run();
 
 private:
@@ -70,7 +75,10 @@ private:
     TexturesCache textures;
     std::vector<const ObjectRenderable*> objects;
 
+    GLuint ballIdToAnimate = 0;
+
     bool setupVAOsAndVBOs();
+    void renderAnimations();
 };
 
 typedef const Application* ApplicationPtr;
