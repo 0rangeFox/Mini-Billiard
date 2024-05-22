@@ -9,7 +9,7 @@ static double Random(double min, double max) {
     return min + (float) rand() / ((float) RAND_MAX / (max - min));
 }
 
-static size_t Random(size_t min, size_t max) {
+static int Random(int min, int max) {
     return min + (rand() % (max - min + 1));
 }
 

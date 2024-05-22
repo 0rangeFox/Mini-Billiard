@@ -14,7 +14,8 @@ static void KeyboardCallback(GLFWwindow* window, int key, int scanCode, int acti
         return;
 
     if (key == GLFW_KEY_SPACE)
-        return;
+        app->shouldAnimate = true;
+        
 
     for (int iKey = 0; iKey <= glm::abs(GLFW_KEY_1 - GLFW_KEY_4); iKey++)
         if (key == GLFW_KEY_1 + iKey)

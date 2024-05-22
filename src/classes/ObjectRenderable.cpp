@@ -112,7 +112,7 @@ static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp, 
     glProgramUniformMatrix3fv(shader, normalMatId, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
     GLint lightStatusId = glGetUniformLocation(shader, "EnabledLights");
-    if (!lightStatusId || !material) return;
+    if (lightStatusId < 0 || !material) return;
 
     glProgramUniform1i(shader, glGetUniformLocation(shader, "EnabledLights[0]"), lights[0]);
     glProgramUniform1i(shader, glGetUniformLocation(shader, "EnabledLights[1]"), lights[1]);

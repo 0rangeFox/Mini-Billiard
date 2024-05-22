@@ -50,6 +50,9 @@ public:
     CameraController* const getCameraPtr() { return &this->camera; }
     const TexturesCache getTexturesCache() const { return this->textures; }
 
+    bool shouldAnimate = false;
+    void animateRandomBall(int ball);
+    
     int run();
 
 private:
