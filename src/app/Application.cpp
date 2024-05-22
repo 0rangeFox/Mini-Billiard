@@ -6,6 +6,7 @@
 #include "../callbacks/DebugCallback.hpp"
 #endif
 #include "../callbacks/ErrorCallback.hpp"
+#include "../callbacks/KeyboardCallback.h"
 #include "../callbacks/MouseButtonCallback.hpp"
 #include "../callbacks/MouseMoveCallback.hpp"
 #include "../callbacks/MouseScrollCallback.hpp"
@@ -138,6 +139,7 @@ int Application::run() {
     glfwSetWindowUserPointer(this->actualWindow, this);
 
     // Initialize mouse interceptors
+    glfwSetKeyCallback(this->actualWindow, KeyboardCallback);
     glfwSetMouseButtonCallback(this->actualWindow, MouseButtonCallback);
     glfwSetCursorPosCallback(this->actualWindow, MouseMoveCallback);
     glfwSetScrollCallback(this->actualWindow, MouseScrollCallback);

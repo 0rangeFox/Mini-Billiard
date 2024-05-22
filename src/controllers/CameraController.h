@@ -2,6 +2,8 @@
 #define MINI_BILLIARD_CAMERACONTROLLER_H
 
 #include <glm/glm.hpp>
+#include "../classes/LightType.h"
+#include <iostream>
 
 #define MIN_FOV 30
 #define MAX_FOV 120
@@ -18,8 +20,11 @@ public:
     const glm::mat4& getMVP() const { return this->mvp; }
     glm::mat4 translate(const glm::vec3&, const glm::vec3&) const;
 
+    const bool* getLights() const { return this->lights; }
     float getAngle() const { return this->angle; }
     float getZoom() const { return this->zoom[0][0]; }
+
+    void updateLight(LightType type) { this->lights[type] = !this->lights[type]; }
 
     float updateFOV(float);
 
@@ -46,6 +51,8 @@ private:
 
     glm::vec3 position, target;
     float fov, angle;
+
+    bool lights[TOTAL_LIGHTS] = { true, true, true, true };
 
     glm::mat4 zoom, projection, view, model{ 1.f };
     glm::mat4 mvp{ .0f };

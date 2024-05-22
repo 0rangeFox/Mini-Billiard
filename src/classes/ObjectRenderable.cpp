@@ -100,7 +100,7 @@ bool ObjectRenderable::assemble(ApplicationPtr app) {
     return CheckErrorAndLog("Couldn't assemble the object with type " + std::to_string(this->type) + ".");
 }
 
-static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp, const glm::mat4& model, const glm::mat4& view, const Material* material) {
+static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp, const glm::mat4& model, const glm::mat4& view, const bool lights[TOTAL_LIGHTS], const Material* material) {
     glm::mat3 normalMatrix = glm::inverseTranspose(glm::mat3(view * model));
     GLint mvpId = glGetUniformLocation(shader, "MVP");
     glProgramUniformMatrix4fv(shader, mvpId, 1, GL_FALSE, glm::value_ptr(mvp));
@@ -110,9 +110,15 @@ static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp, 
     glProgramUniformMatrix4fv(shader, viewId, 1, GL_FALSE, glm::value_ptr(view));
     GLint normalMatId = glGetUniformLocation(shader, "NormalMatrix");
     glProgramUniformMatrix3fv(shader, normalMatId, 1, GL_FALSE, glm::value_ptr(normalMatrix));
-    
-    if (!material) return;
-   
+
+    GLint lightStatusId = glGetUniformLocation(shader, "EnabledLights");
+    if (!lightStatusId || !material) return;
+
+    glProgramUniform1i(shader, glGetUniformLocation(shader, "EnabledLights[0]"), lights[0]);
+    glProgramUniform1i(shader, glGetUniformLocation(shader, "EnabledLights[1]"), lights[1]);
+    glProgramUniform1i(shader, glGetUniformLocation(shader, "EnabledLights[2]"), lights[2]);
+    glProgramUniform1i(shader, glGetUniformLocation(shader, "EnabledLights[3]"), lights[3]);
+
     glProgramUniform3fv(shader, glGetUniformLocation(shader,"ambientLight.ambient"), 1, glm::value_ptr(glm::vec3(0.1, 0.1, 0.1)));
 
     // Fonte de luz direcional
@@ -144,7 +150,6 @@ static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp, 
     glProgramUniform3fv(shader, glGetUniformLocation(shader, "material.diffuse"), 1, glm::value_ptr(material->diffuse_color));
     glProgramUniform3fv(shader, glGetUniformLocation(shader, "material.specular"), 1, glm::value_ptr(material->specular_color));
     glProgramUniform1f(shader, glGetUniformLocation(shader, "material.shininess"), material->specular_exponent);
-
 }
 
 void ObjectRenderable::render(ApplicationPtr app) const {
@@ -154,6 +159,6 @@ void ObjectRenderable::render(ApplicationPtr app) const {
     glUseProgram(this->shader);
     if (this->texture > 0)
         glBindTexture(GL_TEXTURE_2D, this->texture);
-    updateShaderUniformVariableMVP(this->shader, app->getCamera().translate(this->position, this->orientation), app->getCamera().getModel(), app->getCamera().getView(), this->material);
+    updateShaderUniformVariableMVP(this->shader, app->getCamera().translate(this->position, this->orientation), app->getCamera().getModel(), app->getCamera().getView(), app->getCamera().getLights(), this->material);
     glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, nullptr);
 }
