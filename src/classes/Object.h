@@ -9,10 +9,11 @@ typedef struct Object {
         this->orientation = orientation;
     }
 
-    Object(float min = 0, float max = 0) : Object(RandomVec3(min, max), RandomVec3(min, max)) {}
-
     virtual const glm::vec3& getPosition() const { return this->position; }
     virtual const glm::vec3& getOrientation() const { return this->orientation; }
+
+    virtual void updatePosition(const glm::vec3& position) { this->position = position; }
+    virtual void updateOrientation(const glm::vec3& orientation) { this->orientation = orientation; }
 
 protected:
     glm::vec3 position;

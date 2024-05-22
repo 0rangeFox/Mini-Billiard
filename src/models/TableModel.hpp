@@ -6,45 +6,48 @@
 
 class TableModel: public ObjectRenderable {
 public:
-	TableModel(float width = 12.5f, float height = 1.5f, float length = 22.5f): ObjectRenderable(ObjectType::TABLE) {
+	TableModel(float width, float height, float length): ObjectRenderable(ObjectType::TABLE, MeshType::CUBE) {
 		this->files = {
 			{ FileType::VERTEX_SHADER, "shaders/table.vert" },
 			{ FileType::FRAGMENT_SHADER, "shaders/table.frag" }
 		};
 
-        this->position.y = -3.f;
+        this->position.y = -2.5f;
+        this->min = { width, height, length };
+        this->max = { width, height, length };
+
 		this->vertices = {
-			// Frente
+			// Front side
             { -width, -height, length },
             { width, -height, length },
             { width, height, length },
             { -width, height, length },
 
-			// Trás
+			// Back side
             { -width, -height, -length },
             { -width, height, -length },
             { width, height, -length },
             { width, -height, -length },
 
-			// Lado Esquerdo
+			// Left side
             { -width, -height, length },
             { -width, height, length },
             { -width, height, -length },
             { -width, -height, -length },
 
-			// Lado Direito
+			// Right side
             { width, -height, length },
             { width, -height, -length },
             { width, height, -length },
             { width, height, length },
 
-			// Lado de cima
+			// Top side
             { -width, height, length },
             { width, height, length },
             { width, height, -length },
             { -width, height, -length },
 
-			// Lado de baixo
+			// Bottom side
             { -width, -height, length },
             { -width, -height, -length },
             { width, -height, -length },
@@ -52,37 +55,37 @@ public:
 		};
 
 		this->normals = {
-			// Frente
+			// Front side
             { 0.f, 0.f, 1.f },
             { 0.f, 0.f, 1.f },
             { 0.f, 0.f, 1.f },
             { 0.f, 0.f, 1.f },
 
-			// Trás
+			// Back side
             { 0.f, 0.f, -1.f },
             { 0.f, 0.f, -1.f },
             { 0.f, 0.f, -1.f },
             { 0.f, 0.f, -1.f },
 
-			// Lado Esquerdo
+			// Left side
             { 1.f, 0.f, 0.f },
             { 1.f, 0.f, 0.f },
             { 1.f, 0.f, 0.f },
             { 1.f, 0.f, 0.f },
 
-			// Lado Direito
+			// Right side
             { -1.f, 0.f, 0.f },
             { -1.f, 0.f, 0.f },
             { -1.f, 0.f, 0.f },
             { -1.f, 0.f, 0.f },
 
-			// Lado de cima
+			// Top side
             { 0.f, 1.f, 0.f },
             { 0.f, 1.f, 0.f },
             { 0.f, 1.f, 0.f },
             { 0.f, 1.f, 0.f },
 
-			// Lado de baixo
+			// Bottom side
             { 0.f, -1.f, 0.f },
             { 0.f, -1.f, 0.f },
             { 0.f, -1.f, 0.f },
@@ -90,33 +93,33 @@ public:
 		};
 
         this->indices = {
-			// Face frontal
+			// Front face
 			0, 1, 2,
 			2, 3, 0,
 
-			// Face traseira
+			// Back face
 			4, 5, 6,
 			6, 7, 4,
 
-			// Face direita
-			8, 9, 10,
-			10, 11, 8,
+            // Left face
+            8, 9, 10,
+            10, 11, 8,
 
-			// Face esquerda
+            // Right face
 			12, 13, 14,
 			14, 15, 12,
 
-			// Face superior
+			// Top face
 			16, 17, 18,
 			18, 19, 16,
 
-			// Face inferior
+			// Bottom face
 			20, 21, 22,
 			22, 23, 20
 		};
 
-        for (int index = 0; index < this->vertices.size(); index++)
-            GenerateElements(this->elements, &this->vertices[index], nullptr, &this->normals[index]);
+        for (int vertex = 0; vertex < this->vertices.size(); vertex++)
+            GenerateElements(this->elements, &this->vertices[vertex], nullptr, &this->normals[vertex]);
 	}
 };
 

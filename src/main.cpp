@@ -9,9 +9,9 @@ int main() {
 
     Application app { TITLE, WIDTH, HEIGHT };
 
-    app.addObject(new TableModel());
+    app.addObject(new TableModel(TABLE_WIDTH, TABLE_HEIGHT, TABLE_LENGTH));
     for (int i = 1; i <= TOTAL_BALLS; ++i)
-        app.addObject(new ObjectRenderable(ObjectType::BALL, "./PoolBalls/Ball" + std::to_string(i) + ".obj", shaderFiles));
+        app.addObject(new ObjectRenderable(ObjectType::BALL, "./PoolBalls/Ball" + std::to_string(i) + ".obj", shaderFiles), false, TABLE_WIDTH, TABLE_LENGTH);
 
     return app.run();
 }

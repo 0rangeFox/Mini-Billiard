@@ -8,14 +8,14 @@
 #include "../utils/TextureUtil.hpp"
 #include <glm/gtc/matrix_inverse.hpp>
 
-ObjectRenderable::ObjectRenderable(const ObjectType& type) : Object(glm::vec3{ 0.f }, glm::vec3{ 0.f }), type(type) {
+ObjectRenderable::ObjectRenderable(const ObjectType& type, const MeshType& mesh) : MeshCollider(mesh, glm::vec3{ 0.f }, glm::vec3{ 0.f }), type(type) {
     this->isInitialized = true;
 }
 
-ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : Object(-10, 10), type(type) {
+ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : MeshCollider(1.f, -10, 10), type(type) {
     std::string materialFileName{};
 
-    this->position.y = 0;
+    this->position.y = 0.f;
 
     this->addResource(FileType::OBJECT, File(path));
     this->isInitialized = LoadOBJ(path, materialFileName, this->vertices, this->uvs, this->normals, this->indices, this->elements);

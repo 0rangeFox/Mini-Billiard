@@ -6,6 +6,9 @@
 #define HEIGHT 600
 #define MOUSE_SENSITIVITY .05f
 
+#define TABLE_WIDTH 12.5f
+#define TABLE_HEIGHT 1.5f
+#define TABLE_LENGTH 22.5f
 #define TOTAL_BALLS 15
 
 #define VAOs 2

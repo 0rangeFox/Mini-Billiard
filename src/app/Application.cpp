@@ -74,13 +74,28 @@ void unbindBuffers() {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-bool Application::addObject(ObjectRenderable* obj) {
-    bool isAssembledSuccessfully = obj->assemble(this);
+bool Application::addObject(ObjectRenderable* object, bool overlap, float width, float length) {
+    bool isAssembledSuccessfully = object->assemble(this);
 
     unbindBuffers();
 
-    if (isAssembledSuccessfully)
-        this->objects.push_back(obj);
+    if (isAssembledSuccessfully) {
+        if (!overlap) {
+            do {
+                for (auto obj : this->objects)
+                    if ((overlap = object->collideWith(*obj))) {
+                        auto newPosition = glm::vec3{ .0000001f };
+                        newPosition.x = Random(-width, width);
+                        newPosition.z = Random(-length, length);
+                        object->updatePosition(newPosition);
+                        break;
+                    }
+            } while (overlap);
+        }
+
+        this->objects.push_back(object);
+    }
+
     return isAssembledSuccessfully;
 }
 

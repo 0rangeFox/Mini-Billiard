@@ -2,18 +2,20 @@
 #define MINI_BILLIARD_OBJECTRENDERABLE_H
 
 #include "../app/Application.h"
-#include "Object.h"
+#include "MeshCollider.h"
 #include "File.h"
 #include "Material.h"
 #include "Shader.h"
 #include "ObjectType.h"
 
-class ObjectRenderable: protected Object {
+class ObjectRenderable: public MeshCollider {
 public:
-    ObjectRenderable(const ObjectType&);
+    ObjectRenderable(const ObjectType&, const MeshType&);
     ObjectRenderable(const ObjectType&, const std::string&);
     ObjectRenderable(const ObjectType&, const std::string&, const std::unordered_map<FileType, File>&);
     ~ObjectRenderable();
+
+    const ObjectType& getType() const { return this->type; }
 
     template<FileType T>
     const File& getResource() { return this->files[T]; }

@@ -16,14 +16,20 @@ static GLuint UnloadShader(ShaderPtr shader) {
 }
 
 static GLuint UnloadShaderAndLogError(const GLuint& program, ShaderPtr shader, const std::string& message) {
+    if (!program) {
+        std::cout << message << std::endl;
+        return 0;
+    }
+
     GLint infoLogLength = 0;
     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
 
     std::vector<GLchar> infoLog(infoLogLength);
     glGetProgramInfoLog(program, infoLogLength, &infoLogLength, infoLog.data());
 
-   // std::cout << message << std::endl << infoLog.data() << std::endl;
+    std::cout << message << std::endl << infoLog.data() << std::endl;
 
+    glDeleteProgram(program);
     return UnloadShader(shader);
 }
 
@@ -31,6 +37,9 @@ static GLuint LoadShader(ShaderPtr shader) {
     if (!shader) return 0;
 
     GLuint program = glCreateProgram();
+
+    if (!program)
+        return UnloadShaderAndLogError(program, shader, "Error: unable to create shader program.");
 
     for (GLint i = 0; shader[i].type != GL_NONE; i++) {
         shader[i].component = glCreateShader(shader[i].type);

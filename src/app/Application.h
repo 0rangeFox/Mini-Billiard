@@ -44,7 +44,7 @@ public:
     const GLuint& getVAO(ObjectType type) const { return this->VAO[type]; }
     const GLuint& getVBO(ObjectType type, GLuint index) const { return this->VBO[type][index]; }
 
-    bool addObject(ObjectRenderable*);
+    bool addObject(ObjectRenderable*, bool = true, float = 1.f, float = 1.f);
 
     const CameraController& getCamera() const { return this->camera; }
     CameraController* const getCameraPtr() { return &this->camera; }
