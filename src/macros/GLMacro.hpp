@@ -1,7 +1,3 @@
-//
-// Created by João Fernandes on 17/05/2024.
-//
-
 #ifndef MINI_BILLIARD_GLMACRO_HPP
 #define MINI_BILLIARD_GLMACRO_HPP
 

@@ -1,7 +1,3 @@
-//
-// Created by João Fernandes on 20/05/2024.
-//
-
 #include "CameraController.h"
 
 #include "../app/Application.h"

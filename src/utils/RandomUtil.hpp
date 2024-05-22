@@ -1,7 +1,3 @@
-//
-// Created by João Fernandes on 20/05/2024.
-//
-
 #ifndef MINI_BILLIARD_RANDOMUTIL_HPP
 #define MINI_BILLIARD_RANDOMUTIL_HPP
 

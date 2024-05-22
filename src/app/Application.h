@@ -1,7 +1,3 @@
-//
-// Created by João Fernandes on 13/05/2024.
-//
-
 #ifndef MINI_BILLIARD_APPLICATION_H
 #define MINI_BILLIARD_APPLICATION_H
 

@@ -1,8 +1,4 @@
-﻿//
-// Created by Tiago Mendes on 21/05/2024.
-//
-
-#ifndef MINI_BILLIARD_TABLEMODEL_HPP
+﻿#ifndef MINI_BILLIARD_TABLEMODEL_HPP
 #define MINI_BILLIARD_TABLEMODEL_HPP
 
 #include "../classes/ObjectRenderable.h"

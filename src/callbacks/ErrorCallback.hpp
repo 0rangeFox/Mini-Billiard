@@ -1,7 +1,3 @@
-//
-// Created by João Fernandes on 14/05/2024.
-//
-
 #ifndef MINI_BILLIARD_ERRORCALLBACK_HPP
 #define MINI_BILLIARD_ERRORCALLBACK_HPP
 

@@ -1,7 +1,3 @@
-//
-// Created by João Fernandes on 15/05/2024.
-//
-
 #ifndef MINI_BILLIARD_CONSTANTS_H
 #define MINI_BILLIARD_CONSTANTS_H
 

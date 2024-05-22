@@ -1,7 +1,3 @@
-//
-// Created by João Fernandes on 20/05/2024.
-//
-
 #ifndef MINI_BILLIARD_CAMERACONTROLLER_H
 #define MINI_BILLIARD_CAMERACONTROLLER_H
 

@@ -1,7 +1,3 @@
-//
-// Created by João Fernandes on 16/05/2024.
-//
-
 #include "ObjectRenderable.h"
 
 #include <glm/gtc/type_ptr.hpp>

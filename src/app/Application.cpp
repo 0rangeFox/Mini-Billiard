@@ -1,7 +1,3 @@
-//
-// Created by João Fernandes on 13/05/2024.
-//
-
 #include "Application.h"
 
 #include <cstdlib>
