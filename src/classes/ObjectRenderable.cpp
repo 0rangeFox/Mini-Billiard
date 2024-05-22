@@ -6,6 +6,7 @@
 #include "../utils/MaterialUtil.hpp"
 #include "../utils/ShaderUtil.hpp"
 #include "../utils/TextureUtil.hpp"
+#include <glm/gtc/matrix_inverse.hpp>
 
 ObjectRenderable::ObjectRenderable(const ObjectType& type) : Object(glm::vec3{ 0.f }, glm::vec3{ 0.f }), type(type) {
     this->isInitialized = true;
@@ -99,9 +100,51 @@ bool ObjectRenderable::assemble(ApplicationPtr app) {
     return CheckErrorAndLog("Couldn't assemble the object with type " + std::to_string(this->type) + ".");
 }
 
-static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp) {
+static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp, const glm::mat4& model, const glm::mat4& view, const Material* material) {
+    glm::mat3 normalMatrix = glm::inverseTranspose(glm::mat3(view * model));
     GLint mvpId = glGetUniformLocation(shader, "MVP");
     glProgramUniformMatrix4fv(shader, mvpId, 1, GL_FALSE, glm::value_ptr(mvp));
+    GLint modelId = glGetUniformLocation(shader, "Model");
+    glProgramUniformMatrix4fv(shader, modelId, 1, GL_FALSE, glm::value_ptr(model));
+    GLint viewId = glGetUniformLocation(shader, "View");
+    glProgramUniformMatrix4fv(shader, viewId, 1, GL_FALSE, glm::value_ptr(view));
+    GLint normalMatId = glGetUniformLocation(shader, "NormalMatrix");
+    glProgramUniformMatrix3fv(shader, normalMatId, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+    
+    if (!material) return;
+   
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "ambientLight.ambient"), 1, glm::value_ptr(glm::vec3(0.1, 0.1, 0.1)));
+
+    // Fonte de luz direcional
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "directionalLight.direction"), 1, glm::value_ptr(glm::vec3(1.0, 0.0, 0.0)));
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "directionalLight.ambient"), 1, glm::value_ptr(glm::vec3(0.2, 0.2, 0.2)));
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "directionalLight.diffuse"), 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "directionalLight.specular"), 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
+
+    // Fonte de luz pontual #1
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[0].position"), 1, glm::value_ptr(glm::vec3(0.0, 0.0, 5.0)));
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[0].ambient"), 1, glm::value_ptr(glm::vec3(0.1, 0.1, 0.1)));
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[0].diffuse"), 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[0].specular"), 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
+    glProgramUniform1f(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[0].constant"), 1.0f);
+    glProgramUniform1f(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[0].linear"), 0.06f);
+    glProgramUniform1f(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[0].quadratic"), 0.02f);
+
+    // Fonte de luz pontual #2
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[1].position"), 1, glm::value_ptr(glm::vec3(-2.0, 2.0, 5.0)));
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[1].ambient"), 1, glm::value_ptr(glm::vec3(0.1, 0.1, 0.1)));
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[1].diffuse"), 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[1].specular"), 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
+    glProgramUniform1f(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[1].constant"), 1.0f);
+    glProgramUniform1f(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[1].linear"), 0.06f);
+    glProgramUniform1f(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "pointLight[1].quadratic"), 0.02f);
+
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "material.emissive"), 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "material.ambient"), 1, glm::value_ptr(material->ambient_color));
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "material.diffuse"), 1, glm::value_ptr(material->diffuse_color));
+    glProgramUniform3fv(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "material.specular"), 1, glm::value_ptr(material->specular_color));
+    glProgramUniform1f(shader, glGetProgramResourceLocation(shader, GL_UNIFORM, "material.shininess"), material->specular_exponent);
+
 }
 
 void ObjectRenderable::render(ApplicationPtr app) const {
@@ -111,6 +154,6 @@ void ObjectRenderable::render(ApplicationPtr app) const {
     glUseProgram(this->shader);
     if (this->texture > 0)
         glBindTexture(GL_TEXTURE_2D, this->texture);
-    updateShaderUniformVariableMVP(this->shader, app->getCamera().translate(this->position, this->orientation));
+    updateShaderUniformVariableMVP(this->shader, app->getCamera().translate(this->position, this->orientation), app->getCamera().getModel(), app->getCamera().getView(), this->material);
     glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, nullptr);
 }

@@ -20,9 +20,9 @@ static GLuint UnloadShaderAndLogError(const GLuint& program, ShaderPtr shader, c
     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
 
     std::vector<GLchar> infoLog(infoLogLength);
-    glGetProgramInfoLog(program, infoLogLength, &infoLogLength, &infoLog[0]);
+    glGetProgramInfoLog(program, infoLogLength, &infoLogLength, infoLog.data());
 
-    std::cout << message << std::endl << infoLog.data() << std::endl;
+   // std::cout << message << std::endl << infoLog.data() << std::endl;
 
     return UnloadShader(shader);
 }

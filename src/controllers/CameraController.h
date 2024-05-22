@@ -13,7 +13,7 @@ public:
     CameraController(const Application*);
 
     bool initialize(const glm::vec3&, float = MIN_FOV);
-
+    const glm::mat4& getView() const { return this->view; }
     const glm::mat4& getModel() const { return this->model; }
     const glm::mat4& getMVP() const { return this->mvp; }
     glm::mat4 translate(const glm::vec3&, const glm::vec3&) const;
