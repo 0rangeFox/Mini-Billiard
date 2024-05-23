@@ -84,8 +84,8 @@ bool Application::addObject(ObjectRenderable* object, bool overlap, float width,
         if (!overlap) {
             do {
                 for (auto obj : this->objects)
-                    if ((overlap = object->collideWith(*obj))) {
-                        auto newPosition = glm::vec3{ .0000001f };
+                    if (object->getType() == obj->getType() && (overlap = object->collideWith(*obj))) {
+                        auto newPosition = glm::vec3{ 0.f };
                         newPosition.x = Random(-width, width);
                         newPosition.z = Random(-length, length);
                         object->updatePosition(newPosition);
@@ -141,19 +141,16 @@ void Application::renderAnimations() {
     oldPosition.x += 0.01f;
     oldPosition.z -= 1.f;
 
-    if (oldPosition.x + 1 >= TABLE_WIDTH || oldPosition.x - 1 <= -TABLE_WIDTH ||
-        oldPosition.z + 1 >= TABLE_LENGTH || oldPosition.z - 1 <= -TABLE_LENGTH) {
+    for (auto object : this->objects) {
+        if (object->getType() == ObjectType::TABLE) {
+            if (ballObj->collideWith(*object)) continue;
+        } else if (!ballObj->collideWith(*object)) continue;
+
         this->ballIdToAnimate = false;
         return;
     }
 
     ballObj->updatePosition(oldPosition);
-
-    for (auto object : this->objects) {
-        if (object->getType() == ObjectType::TABLE || !ballObj->collideWith(*object)) continue;
-        this->ballIdToAnimate = false;
-        break;
-    }
 }
 
 int Application::run() {
