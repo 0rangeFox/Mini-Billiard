@@ -22,12 +22,24 @@ static GLuint UnloadShaderAndLogError(const GLuint& program, ShaderPtr shader, c
     }
 
     GLint infoLogLength = 0;
+    GLchar* infoLog = nullptr;
+
     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
+    if (infoLogLength) {
+        infoLog = new GLchar[infoLogLength + 1];
+        glGetProgramInfoLog(program, infoLogLength, nullptr, infoLog);
+    } else if (shader->component) {
+        glGetShaderiv(shader->component, GL_INFO_LOG_LENGTH, &infoLogLength);
 
-    std::vector<GLchar> infoLog(infoLogLength);
-    glGetProgramInfoLog(program, infoLogLength, &infoLogLength, infoLog.data());
+        infoLog = new GLchar[infoLogLength + 1];
+        glGetShaderInfoLog(shader->component, infoLogLength, nullptr, infoLog);
+    }
 
-    //std::cout << message << std::endl << infoLog.data() << std::endl;
+    std::cout << message << std::endl;
+    if (infoLog) {
+        std::cout << &infoLog[0] << std::endl;
+        delete infoLog;
+    }
 
     glDeleteProgram(program);
     return UnloadShader(shader);
@@ -42,11 +54,12 @@ static GLuint LoadShader(ShaderPtr shader) {
         return UnloadShaderAndLogError(program, shader, "Error: unable to create shader program.");
 
     for (GLint i = 0; shader[i].type != GL_NONE; i++) {
+        shader[i].program = program;
         shader[i].component = glCreateShader(shader[i].type);
 
         const std::string& fileContents = GetStringFromVector(ReadFile(shader[i].file->getFullPath()));
         if (fileContents.empty())
-            return UnloadShader(shader);
+            return UnloadShaderAndLogError(program, shader, "Error: failed to read the file \"" + shader[i].file->getFullPath() + "\".");
 
         const char* contents = fileContents.c_str();
         glShaderSource(shader[i].component, 1, &contents, nullptr);
