@@ -22,6 +22,19 @@ public:
 
     float getAspectRatio() const { return this->aspectRatio; }
 
+    bool updateResolution(int width, int height) {
+        glfwGetWindowSize(this->actualWindow, &this->width, &this->height);
+
+        if (this->width == width && this->height == height)
+            return false;
+
+        glfwSetWindowSize(this->actualWindow, this->width = width, this->height = height);
+        glViewport(0, 0, this->width, this->height);
+        this->aspectRatio = float(this->width) / float(this->height);
+
+        return true;
+    }
+
     /// Update the coordinates of mouse
     /// \param x The new position in X
     /// \param y The new position in Y
@@ -61,9 +74,9 @@ public:
     int run();
 
 private:
-    bool isInitialized, mouseLeftButtonDownStatus;
-    int width, height;
-    float aspectRatio;
+    bool isInitialized = false, mouseLeftButtonDownStatus = false;
+    int width = 0, height = 0;
+    float aspectRatio = 0.f;
 
     MouseCoord mouseX{ 0, 0 }, mouseY{ 0, 0 };
 

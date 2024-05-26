@@ -59,7 +59,20 @@ bool ObjectRenderable::generateTextures(ApplicationPtr app) {
     return true;
 }
 
+void ObjectRenderable::refreshModel() {
+    glm::mat4 modelTranslated = glm::translate(glm::mat4(1.0f), this->position);
+
+    //                                                                                 Pitch | Yaw | Roll
+    modelTranslated = glm::rotate(modelTranslated, glm::radians(this->orientation.x), glm::vec3(1.f, 0.f, 0.f));
+    modelTranslated = glm::rotate(modelTranslated, glm::radians(this->orientation.y), glm::vec3(0.f, 1.f, 0.f));
+    modelTranslated = glm::rotate(modelTranslated, glm::radians(this->orientation.z), glm::vec3(0.f, 0.f, 1.f));
+
+    this->model = modelTranslated;
+}
+
 bool ObjectRenderable::assemble(ApplicationPtr app) {
+    this->refreshModel();
+
     glBindVertexArray(app->getVAO(this->type));
 
     if (!this->generateShaders() || !this->generateTextures(app))
@@ -100,24 +113,26 @@ bool ObjectRenderable::assemble(ApplicationPtr app) {
     return CheckErrorAndLog("Couldn't assemble the object with type " + std::to_string(this->type) + ".");
 }
 
-static void updateShaderUniformVariableMVP(GLuint shader, const glm::mat4& mvp, const glm::mat4& model, const glm::mat4& view, const bool lights[TOTAL_LIGHTS], const Material* material) {
-    glm::mat3 normalMatrix = glm::inverseTranspose(glm::mat3(view * model));
-    GLint mvpId = glGetUniformLocation(shader, "MVP");
-    glProgramUniformMatrix4fv(shader, mvpId, 1, GL_FALSE, glm::value_ptr(mvp));
-    GLint modelId = glGetUniformLocation(shader, "Model");
-    glProgramUniformMatrix4fv(shader, modelId, 1, GL_FALSE, glm::value_ptr(model));
+void ObjectRenderable::updateShaderUniformVariables(ApplicationPtr app) const {
+    GLint projectionId = glGetUniformLocation(shader, "Projection");
+    glProgramUniformMatrix4fv(shader, projectionId, 1, GL_FALSE, glm::value_ptr(app->getCamera().getProjection()));
     GLint viewId = glGetUniformLocation(shader, "View");
-    glProgramUniformMatrix4fv(shader, viewId, 1, GL_FALSE, glm::value_ptr(view));
-    GLint normalMatId = glGetUniformLocation(shader, "NormalMatrix");
-    glProgramUniformMatrix3fv(shader, normalMatId, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+    glProgramUniformMatrix4fv(shader, viewId, 1, GL_FALSE, glm::value_ptr(app->getCamera().getView()));
+    GLint modelId = glGetUniformLocation(shader, "Model");
+    glProgramUniformMatrix4fv(shader, modelId, 1, GL_FALSE, glm::value_ptr(app->getCamera().getModel()));
+    GLint zoomId = glGetUniformLocation(shader, "Zoom");
+    glProgramUniformMatrix4fv(shader, zoomId, 1, GL_FALSE, glm::value_ptr(app->getCamera().getZoom()));
+    GLint objModelId = glGetUniformLocation(shader, "ObjModel");
+    glProgramUniformMatrix4fv(shader, objModelId, 1, GL_FALSE, glm::value_ptr(this->model));
 
     GLint lightStatusId = glGetUniformLocation(shader, "EnabledLights");
     if (lightStatusId < 0 || !material) return;
 
-    glProgramUniform1i(shader, glGetUniformLocation(shader, "EnabledLights[0]"), lights[0]);
-    glProgramUniform1i(shader, glGetUniformLocation(shader, "EnabledLights[1]"), lights[1]);
-    glProgramUniform1i(shader, glGetUniformLocation(shader, "EnabledLights[2]"), lights[2]);
-    glProgramUniform1i(shader, glGetUniformLocation(shader, "EnabledLights[3]"), lights[3]);
+    const bool* lights = app->getCamera().getLights();
+    for (int i = 0; i < TOTAL_LIGHTS; ++i) {
+        std::string uniformName = "EnabledLights[" + std::to_string(i) + "]";
+        glProgramUniform1i(shader, glGetUniformLocation(shader, uniformName.c_str()), lights[i]);
+    }
 
     glProgramUniform3fv(shader, glGetUniformLocation(shader,"ambientLight.ambient"), 1, glm::value_ptr(glm::vec3(0.1, 0.1, 0.1)));
 
@@ -159,6 +174,6 @@ void ObjectRenderable::render(ApplicationPtr app) const {
     glUseProgram(this->shader);
     if (this->texture > 0)
         glBindTexture(GL_TEXTURE_2D, this->texture);
-    updateShaderUniformVariableMVP(this->shader, app->getCamera().translate(this->position, this->orientation), app->getCamera().getModel(), app->getCamera().getView(), app->getCamera().getLights(), this->material);
+    this->updateShaderUniformVariables(app);
     glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, nullptr);
 }

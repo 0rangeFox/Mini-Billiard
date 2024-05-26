@@ -1,7 +1,7 @@
 #ifndef MINI_BILLIARD_DEBUGCALLBACK_HPP
 #define MINI_BILLIARD_DEBUGCALLBACK_HPP
 
-#include <stdio.h>
+#include <cstdio>
 #include <GL/glew.h>
 
 // https://www.khronos.org/opengl/wiki/OpenGL_Error#Catching_errors_.28the_easy_way.29

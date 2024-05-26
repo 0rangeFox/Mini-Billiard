@@ -26,6 +26,16 @@ public:
     bool assemble(ApplicationPtr);
     void render(ApplicationPtr) const;
 
+    void updatePosition(const glm::vec3 &position) override {
+        Object::updatePosition(position);
+        this->refreshModel();
+    }
+
+    void updateOrientation(const glm::vec3 &orientation) override {
+        Object::updateOrientation(orientation);
+        this->refreshModel();
+    }
+
 protected:
     std::unordered_map<FileType, File> files{};
 
@@ -35,6 +45,7 @@ protected:
     std::vector<glm::vec2> uvs{};
     std::vector<GLuint> indices{};
     std::vector<GLfloat> elements{};
+    glm::mat4 model{};
 
 private:
     bool isInitialized;
@@ -44,6 +55,8 @@ private:
 
     bool generateShaders();
     bool generateTextures(ApplicationPtr);
+    void refreshModel();
+    void updateShaderUniformVariables(ApplicationPtr) const;
 };
 
 #endif //MINI_BILLIARD_OBJECTRENDERABLE_H

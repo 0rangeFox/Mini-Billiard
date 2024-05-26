@@ -15,18 +15,20 @@ public:
     CameraController(const Application*);
 
     bool initialize(const glm::vec3&, float = MIN_FOV);
+    const glm::mat4& getProjection() const { return this->projection; }
     const glm::mat4& getView() const { return this->view; }
     const glm::mat4& getModel() const { return this->model; }
     const glm::mat4& getMVP() const { return this->mvp; }
-    glm::mat4 translate(const glm::vec3&, const glm::vec3&) const;
+    const glm::mat4& getZoom() const { return this->zoom; }
 
     const bool* getLights() const { return this->lights; }
     float getAngle() const { return this->angle; }
-    float getZoom() const { return this->zoom[0][0]; }
+    float getZoomValue() const { return this->zoom[0][0]; }
 
     void updateLight(LightType type) { this->lights[type] = !this->lights[type]; }
 
     float updateFOV(float);
+    void updatePosition(const glm::vec3&, const glm::vec3& = glm::vec3{ 0.f });
 
     /// Set a value to the angle
     /// \return  The last angle value

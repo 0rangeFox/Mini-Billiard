@@ -6,6 +6,8 @@
 #include "../callbacks/DebugCallback.hpp"
 #endif
 #include "../callbacks/ErrorCallback.hpp"
+#include "../callbacks/WindowSizeCallback.hpp"
+#include "../callbacks/FrameBufferSizeCallback.hpp"
 #include "../callbacks/KeyboardCallback.h"
 #include "../callbacks/MouseButtonCallback.hpp"
 #include "../callbacks/MouseMoveCallback.hpp"
@@ -13,9 +15,6 @@
 #include "../classes/ObjectRenderable.h"
 
 Application::Application(const char* title, int width, int height) {
-    this->width = width;
-    this->height = height;
-    this->aspectRatio = float(this->width) / float(this->height);
     this->textures = new std::unordered_map<GLuint, GLuint>();
     glewExperimental = GL_TRUE;
 
@@ -30,16 +29,21 @@ Application::Application(const char* title, int width, int height) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 #elif __APPLE__
     glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 #endif
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    this->actualWindow = glfwCreateWindow(this->width, this->height, title, nullptr, nullptr);
-    glfwMakeContextCurrent(this->actualWindow);
+    if (!(this->actualWindow = glfwCreateWindow(1, 1, title, nullptr, nullptr)))
+        return;
 
-    if (!this->actualWindow || glewInit() != GLEW_OK || !this->setupVAOsAndVBOs())
+    glfwMakeContextCurrent(this->actualWindow);
+    this->updateResolution(width, height);
+    glfwSetWindowSizeCallback(this->actualWindow, WindowSizeCallback);
+    glfwSetFramebufferSizeCallback(this->actualWindow, FrameBufferSizeCallback);
+
+    if (glewInit() != GLEW_OK || !this->setupVAOsAndVBOs())
         return;
 
 #if _WIN32 || _WIN64
@@ -48,7 +52,6 @@ Application::Application(const char* title, int width, int height) {
 #endif
 
     glEnable(GL_DEPTH_TEST);
-    glViewport(0, 0, this->width, this->height);
     this->isInitialized = this->camera.initialize(glm::vec3(0.f, 10.f, 20.f));
 }
 
@@ -137,9 +140,12 @@ void Application::renderAnimations() {
 
     auto* ballObj = (ObjectRenderable*) this->objects.at(this->ballIdToAnimate);
 
-    glm::vec3 oldPosition = ballObj->getPosition();
-    oldPosition.x += 0.01f;
-    oldPosition.z -= 1.f;
+    glm::vec3 updatedPosition = ballObj->getPosition();
+    glm::vec3 updatedOrientation = ballObj->getOrientation();
+
+    updatedPosition.x += 0.01f;
+    updatedPosition.z -= .45f;
+    updatedOrientation += glm::vec3{ 7.5f };
 
     for (auto object : this->objects) {
         if (object->getType() == ObjectType::TABLE) {
@@ -150,7 +156,8 @@ void Application::renderAnimations() {
         return;
     }
 
-    ballObj->updatePosition(oldPosition);
+    ballObj->updatePosition(updatedPosition);
+    ballObj->updateOrientation(updatedOrientation);
 }
 
 int Application::run() {
