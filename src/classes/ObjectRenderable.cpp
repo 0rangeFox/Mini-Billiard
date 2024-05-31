@@ -128,11 +128,7 @@ void ObjectRenderable::updateShaderUniformVariables(ApplicationPtr app) const {
     GLint lightStatusId = glGetUniformLocation(shader, "EnabledLights");
     if (lightStatusId < 0 || !material) return;
 
-    const bool* lights = app->getCamera().getLights();
-    for (int i = 0; i < TOTAL_LIGHTS; ++i) {
-        std::string uniformName = "EnabledLights[" + std::to_string(i) + "]";
-        glProgramUniform1i(shader, glGetUniformLocation(shader, uniformName.c_str()), lights[i]);
-    }
+    glProgramUniform1iv(shader, glGetUniformLocation(shader, "EnabledLights"), TOTAL_LIGHTS, app->getCamera().getLights());
 
     glProgramUniform3fv(shader, glGetUniformLocation(shader,"ambientLight.ambient"), 1, glm::value_ptr(glm::vec3(0.1, 0.1, 0.1)));
 
