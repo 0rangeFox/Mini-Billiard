@@ -21,7 +21,7 @@ public:
     const glm::mat4& getMVP() const { return this->mvp; }
     const glm::mat4& getZoom() const { return this->zoom; }
 
-    const bool* getLights() const { return this->lights; }
+    const int* getLights() const { return this->lights; }
     float getAngle() const { return this->angle; }
     float getZoomValue() const { return this->zoom[0][0]; }
 
@@ -54,7 +54,7 @@ private:
     glm::vec3 position, target;
     float fov, angle;
 
-    bool lights[TOTAL_LIGHTS] = { true, true, true, true };
+    int lights[TOTAL_LIGHTS] = { true, true, true, true };
 
     glm::mat4 zoom, projection, view, model{ 1.f };
     glm::mat4 mvp{ .0f };
