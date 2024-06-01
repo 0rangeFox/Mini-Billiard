@@ -1,7 +1,3 @@
-//
-// Created by João Fernandes on 21/05/2024.
-//
-
 #ifndef MINI_BILLIARD_MESHCOLLIDER_H
 #define MINI_BILLIARD_MESHCOLLIDER_H
 
