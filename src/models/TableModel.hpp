@@ -13,8 +13,7 @@ public:
 		};
 
         this->position.y = -2.5f;
-        this->min = { width, height, length };
-        this->max = { width, height, length };
+        this->min = this->max = { width, height, length };
 
 		this->vertices = {
 			// Front side
