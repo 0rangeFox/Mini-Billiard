@@ -15,16 +15,20 @@ public:
     const MeshType& getMeshType() const { return this->type; }
 
     // https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection#sphere_vs._sphere
-    bool collideWith(const MeshCollider& other) const {
+    bool collideWith(const MeshCollider& other, const glm::vec3& updatedPosition) const {
         if (this == &other) {
             return false;
         } else if (this->type == MeshType::SPHERE && other.type == MeshType::SPHERE)
-            return glm::distance(this->position, other.position) <= this->radius + other.radius;
+            return glm::distance(updatedPosition, other.position) <= this->radius + other.radius;
         else if (this->type == MeshType::SPHERE && other.type == MeshType::CUBE) {
-            auto closestPoint = glm::clamp(this->position, other.position - other.min, other.position + other.max);
-            return glm::distance(this->position, closestPoint) <= this->radius;
+            auto closestPoint = glm::clamp(updatedPosition, other.position - other.min, other.position + other.max);
+            return glm::distance(updatedPosition, closestPoint) <= this->radius;
         } else
             return false;
+    }
+
+    bool collideWith(const MeshCollider& other) const {
+        return collideWith(other, this->position);
     }
 
 protected:

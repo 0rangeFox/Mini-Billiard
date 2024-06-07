@@ -17,9 +17,9 @@ static void GenerateElements(std::vector<GLfloat>& elements, const glm::vec3* ve
         elements.push_back(vertices->y);
         elements.push_back(vertices->z);
     } else {
-        elements.push_back(0);
-        elements.push_back(0);
-        elements.push_back(0);
+        elements.push_back(0.f);
+        elements.push_back(0.f);
+        elements.push_back(0.f);
     }
 
     // U V
@@ -37,9 +37,9 @@ static void GenerateElements(std::vector<GLfloat>& elements, const glm::vec3* ve
         elements.push_back(normals->y);
         elements.push_back(normals->z);
     } else {
-        elements.push_back(0);
-        elements.push_back(0);
-        elements.push_back(0);
+        elements.push_back(0.f);
+        elements.push_back(0.f);
+        elements.push_back(0.f);
     }
 }
 

@@ -149,8 +149,8 @@ void Application::renderAnimations() {
 
     for (auto object : this->objects) {
         if (object->getType() == ObjectType::TABLE) {
-            if (ballObj->collideWith(*object)) continue;
-        } else if (!ballObj->collideWith(*object)) continue;
+            if (ballObj->collideWith(*object, updatedPosition)) continue;
+        } else if (!ballObj->collideWith(*object, updatedPosition)) continue;
 
         this->ballIdToAnimate = false;
         return;

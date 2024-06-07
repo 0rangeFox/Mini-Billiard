@@ -13,21 +13,23 @@
 
 static MaterialPtr LoadMaterial(const std::string& path) {
     auto* material = new Material{ File(path) };
-    if (!ReadFile(path, [material](const std::string& line) {
-        if (!line.rfind(HEADER_NAME))
-            std::istringstream(line.substr(6)) >> material->name;
-        else if (!line.rfind(HEADER_SPECULAR_EXP))
-            std::istringstream(line.substr(2)) >> material->specular_exponent;
-        else if (!line.rfind(HEADER_AMBIENTE_COLOR))
-            std::istringstream(line.substr(2)) >> material->ambient_color.r >> material->ambient_color.g >> material->ambient_color.b;
-        else if (!line.rfind(HEADER_DIFFUSE_COLOR))
-            std::istringstream(line.substr(2)) >> material->diffuse_color.r >> material->diffuse_color.g >> material->diffuse_color.b;
-        else if (!line.rfind(HEADER_SPECULAR_COLOR))
-            std::istringstream(line.substr(2)) >> material->specular_color.r >> material->specular_color.g >> material->specular_color.b;
-        else if (!line.rfind(HEADER_IMAGE)) {
-            std::string imageName;
-            std::istringstream(line.substr(6)) >> imageName;
-            material->image = material->file.copyPathToFile(imageName);
+    if (!ReadFileStream(path, [material](std::istringstream line) {
+        std::string header;
+        line >> header;
+
+        if (header == HEADER_NAME)
+            line >> material->name;
+        else if (header == HEADER_SPECULAR_EXP)
+            line >> material->specular_exponent;
+        else if (header == HEADER_AMBIENTE_COLOR)
+            line >> material->ambient_color.r >> material->ambient_color.g >> material->ambient_color.b;
+        else if (header == HEADER_DIFFUSE_COLOR)
+            line >> material->diffuse_color.r >> material->diffuse_color.g >> material->diffuse_color.b;
+        else if (header == HEADER_SPECULAR_COLOR)
+            line >> material->specular_color.r >> material->specular_color.g >> material->specular_color.b;
+        else if (header == HEADER_IMAGE) {
+            line >> header;
+            material->image = material->file.copyPathToFile(header);
         }
 
         return true;
