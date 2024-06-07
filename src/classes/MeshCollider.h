@@ -10,7 +10,7 @@ typedef struct MeshCollider: public Object {
 public:
     explicit MeshCollider(MeshType type, const glm::vec3& position, const glm::vec3& orientation, float radius = DEFAULT_VALUE, float minX = DEFAULT_VALUE, float maxX = DEFAULT_VALUE, float minY = DEFAULT_VALUE, float maxY = DEFAULT_VALUE, float minZ = DEFAULT_VALUE, float maxZ = DEFAULT_VALUE) : Object(position, orientation), type(type), radius(radius), min({ minX, minY, minZ }), max({ maxX, maxY, maxZ }) {}
     explicit MeshCollider(const glm::vec3& position, const glm::vec3& orientation, float radius) : MeshCollider(MeshType::SPHERE, position, orientation, radius) {}
-    MeshCollider(float radius = DEFAULT_VALUE, float min = 0, float max = 0) : MeshCollider(RandomVec3(min, max), RandomVec3(-360, 360), radius) {}
+    MeshCollider(float radius = DEFAULT_VALUE, float minX = 0.f, float maxX = 0.f, float minZ = 0.f, float maxZ = 0.f) : MeshCollider(glm::vec3(Random(minX, maxX), 0.f, Random(minZ, maxZ)), RandomVec3(-360, 360), radius) {}
 
     const MeshType& getMeshType() const { return this->type; }
 

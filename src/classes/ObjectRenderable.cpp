@@ -6,16 +6,13 @@
 #include "../utils/MaterialUtil.hpp"
 #include "../utils/ShaderUtil.hpp"
 #include "../utils/TextureUtil.hpp"
-#include <glm/gtc/matrix_inverse.hpp>
 
 ObjectRenderable::ObjectRenderable(const ObjectType& type, const MeshType& mesh) : MeshCollider(mesh, glm::vec3{ 0.f }, glm::vec3{ 0.f }), type(type) {
     this->isInitialized = true;
 }
 
-ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : MeshCollider(1.f, -TABLE_WIDTH, TABLE_WIDTH), type(type) {
+ObjectRenderable::ObjectRenderable(const ObjectType& type, const std::string& path) : MeshCollider(1.f, -TABLE_WIDTH, TABLE_WIDTH, -TABLE_LENGTH, TABLE_LENGTH), type(type) {
     std::string materialFileName{};
-
-    this->position.y = 0.f;
 
     this->addResource(FileType::OBJECT, File(path));
     this->isInitialized = LoadOBJ(path, materialFileName, this->vertices, this->uvs, this->normals, this->indices, this->elements);
