@@ -14,6 +14,10 @@ The keys are very simple, here is a list of the keys that is being listened:
 * **Key 4**: To enable/disable the spot light.
 
 ## 🕹 Images & Videos
+![1](https://github.com/0rangeFox/Mini-Billiard/assets/38193239/4d3aeb86-7ef6-40f0-9476-b3637258c6e7)
+![2](https://github.com/0rangeFox/Mini-Billiard/assets/38193239/de622baf-dd4c-48da-9497-ca0e47c889df)
+
+https://github.com/0rangeFox/Mini-Billiard/assets/38193239/3a283b31-495c-4041-aae9-47d96de16b36
 
 ## ⚙️ How to build the project
 ```bash
