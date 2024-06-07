@@ -29,6 +29,9 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 make && sudo make install
 ```
 
+## 📁 Materials
+The materials provided in the project are for testing purposes only and were made available by the teacher. I don't know their origin, only the shaders were made by us. If any of the respective files are not authorized to be published, please let me know so that I can make the necessary changes accordingly.
+
 ## 📝 License
 Copyright © 2024 [João Fernandes](https://github.com/0rangeFox) & [Tiago Mendes](https://github.com/mendes001). <br/>
 This project is [MIT](LICENSE) licensed.
